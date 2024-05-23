@@ -1,4 +1,4 @@
-package com.deng.springbootinit.controller;
+package com.deng.springbootinit.controller.front;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.deng.springbootinit.annotation.AuthCheck;

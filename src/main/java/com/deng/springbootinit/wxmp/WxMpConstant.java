@@ -1,4 +1,4 @@
-package com.yupi.springbootinit.wxmp;
+package com.deng.springbootinit.wxmp;
 
 /**
  * 微信公众号相关常量

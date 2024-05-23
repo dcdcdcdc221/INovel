@@ -1,15 +1,15 @@
-package com.yupi.springbootinit.service.impl;
+package com.deng.springbootinit.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.yupi.springbootinit.common.ErrorCode;
-import com.yupi.springbootinit.exception.BusinessException;
-import com.yupi.springbootinit.mapper.PostThumbMapper;
-import com.yupi.springbootinit.model.entity.Post;
-import com.yupi.springbootinit.model.entity.PostThumb;
-import com.yupi.springbootinit.model.entity.User;
-import com.yupi.springbootinit.service.PostService;
-import com.yupi.springbootinit.service.PostThumbService;
+import com.deng.springbootinit.common.ErrorCode;
+import com.deng.springbootinit.exception.BusinessException;
+import com.deng.springbootinit.mapper.PostThumbMapper;
+import com.deng.springbootinit.model.entity.Post;
+import com.deng.springbootinit.model.entity.PostThumb;
+import com.deng.springbootinit.model.entity.UserInfo;
+import com.deng.springbootinit.service.PostService;
+import com.deng.springbootinit.service.PostThumbService;
 import javax.annotation.Resource;
 import org.springframework.aop.framework.AopContext;
 import org.springframework.stereotype.Service;
@@ -32,18 +32,18 @@ public class PostThumbServiceImpl extends ServiceImpl<PostThumbMapper, PostThumb
      * 点赞
      *
      * @param postId
-     * @param loginUser
+     * @param loginUserInfo
      * @return
      */
     @Override
-    public int doPostThumb(long postId, User loginUser) {
+    public int doPostThumb(long postId, UserInfo loginUserInfo) {
         // 判断实体是否存在，根据类别获取实体
         Post post = postService.getById(postId);
         if (post == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
         // 是否已点赞
-        long userId = loginUser.getId();
+        long userId = loginUserInfo.getId();
         // 每个用户串行点赞
         // 锁必须要包裹住事务方法
         PostThumbService postThumbService = (PostThumbService) AopContext.currentProxy();

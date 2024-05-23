@@ -15,9 +15,9 @@ import lombok.Data;
  * @author <a href="https://github.com/liyupi">程序员鱼皮</a>
  * @from <a href="https://yupi.icu">编程导航知识星球</a>
  */
-@TableName(value = "user")
+@TableName(value = "user_info")
 @Data
-public class User implements Serializable {
+public class UserInfo implements Serializable {
 
     /**
      * id
@@ -64,7 +64,10 @@ public class User implements Serializable {
      * 用户角色：user/admin/ban
      */
     private String userRole;
-
+    /**
+     *用户性别;0-男 1-女
+     */
+    private Integer userSex;
     /**
      * 创建时间
      */

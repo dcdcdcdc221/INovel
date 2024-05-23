@@ -1,4 +1,4 @@
-package com.yupi.springbootinit.model.vo;
+package com.deng.springbootinit.model.vo;
 
 import java.io.Serializable;
 import java.util.Date;

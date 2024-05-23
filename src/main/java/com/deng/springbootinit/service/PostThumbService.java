@@ -1,8 +1,8 @@
-package com.yupi.springbootinit.service;
+package com.deng.springbootinit.service;
 
-import com.yupi.springbootinit.model.entity.PostThumb;
+import com.deng.springbootinit.model.entity.PostThumb;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.yupi.springbootinit.model.entity.User;
+import com.deng.springbootinit.model.entity.UserInfo;
 
 /**
  * 帖子点赞服务
@@ -16,10 +16,10 @@ public interface PostThumbService extends IService<PostThumb> {
      * 点赞
      *
      * @param postId
-     * @param loginUser
+     * @param loginUserInfo
      * @return
      */
-    int doPostThumb(long postId, User loginUser);
+    int doPostThumb(long postId, UserInfo loginUserInfo);
 
     /**
      * 帖子点赞（内部服务）

@@ -1,7 +1,8 @@
-package com.yupi.springbootinit.service;
+package com.deng.springbootinit.service;
 
-import com.yupi.springbootinit.model.entity.User;
+import com.deng.springbootinit.model.entity.UserInfo;
 import javax.annotation.Resource;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -19,16 +20,16 @@ class PostThumbServiceTest {
     @Resource
     private PostThumbService postThumbService;
 
-    private static final User loginUser = new User();
+    private static final UserInfo LOGIN_USER_INFO = new UserInfo();
 
     @BeforeAll
     static void setUp() {
-        loginUser.setId(1L);
+        LOGIN_USER_INFO.setId(1L);
     }
 
     @Test
     void doPostThumb() {
-        int i = postThumbService.doPostThumb(1L, loginUser);
+        int i = postThumbService.doPostThumb(1L, LOGIN_USER_INFO);
         Assertions.assertTrue(i >= 0);
     }
 }

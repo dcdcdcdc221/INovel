@@ -1,6 +1,6 @@
-package com.yupi.springbootinit.exception;
+package com.deng.springbootinit.exception;
 
-import com.yupi.springbootinit.common.ErrorCode;
+import com.deng.springbootinit.common.ErrorCode;
 
 /**
  * 自定义异常类

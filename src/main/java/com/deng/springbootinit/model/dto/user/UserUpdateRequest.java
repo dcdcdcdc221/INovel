@@ -1,4 +1,4 @@
-package com.yupi.springbootinit.model.dto.user;
+package com.deng.springbootinit.model.dto.user;
 
 import java.io.Serializable;
 import lombok.Data;
@@ -35,6 +35,10 @@ public class UserUpdateRequest implements Serializable {
      * 用户角色：user/admin/ban
      */
     private String userRole;
+    /**
+     * 用户性别
+     */
+    private Integer userSex;
 
     private static final long serialVersionUID = 1L;
 }

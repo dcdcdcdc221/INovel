@@ -1,13 +1,13 @@
-package com.yupi.springbootinit.controller;
+package com.deng.springbootinit.controller;
 
-import com.yupi.springbootinit.common.BaseResponse;
-import com.yupi.springbootinit.common.ErrorCode;
-import com.yupi.springbootinit.common.ResultUtils;
-import com.yupi.springbootinit.exception.BusinessException;
-import com.yupi.springbootinit.model.dto.postthumb.PostThumbAddRequest;
-import com.yupi.springbootinit.model.entity.User;
-import com.yupi.springbootinit.service.PostThumbService;
-import com.yupi.springbootinit.service.UserService;
+import com.deng.springbootinit.common.BaseResponse;
+import com.deng.springbootinit.common.ErrorCode;
+import com.deng.springbootinit.common.ResultUtils;
+import com.deng.springbootinit.exception.BusinessException;
+import com.deng.springbootinit.model.dto.postthumb.PostThumbAddRequest;
+import com.deng.springbootinit.model.entity.UserInfo;
+import com.deng.springbootinit.service.PostThumbService;
+import com.deng.springbootinit.service.UserService;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -47,9 +47,9 @@ public class PostThumbController {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         // 登录才能点赞
-        final User loginUser = userService.getLoginUser(request);
+        final UserInfo loginUserInfo = userService.getLoginUser(request);
         long postId = postThumbAddRequest.getPostId();
-        int result = postThumbService.doPostThumb(postId, loginUser);
+        int result = postThumbService.doPostThumb(postId, loginUserInfo);
         return ResultUtils.success(result);
     }
 

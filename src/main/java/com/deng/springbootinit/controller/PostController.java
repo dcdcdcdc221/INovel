@@ -1,24 +1,24 @@
-package com.yupi.springbootinit.controller;
+package com.deng.springbootinit.controller;
 
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.yupi.springbootinit.annotation.AuthCheck;
-import com.yupi.springbootinit.common.BaseResponse;
-import com.yupi.springbootinit.common.DeleteRequest;
-import com.yupi.springbootinit.common.ErrorCode;
-import com.yupi.springbootinit.common.ResultUtils;
-import com.yupi.springbootinit.constant.UserConstant;
-import com.yupi.springbootinit.exception.BusinessException;
-import com.yupi.springbootinit.exception.ThrowUtils;
-import com.yupi.springbootinit.model.dto.post.PostAddRequest;
-import com.yupi.springbootinit.model.dto.post.PostEditRequest;
-import com.yupi.springbootinit.model.dto.post.PostQueryRequest;
-import com.yupi.springbootinit.model.dto.post.PostUpdateRequest;
-import com.yupi.springbootinit.model.entity.Post;
-import com.yupi.springbootinit.model.entity.User;
-import com.yupi.springbootinit.model.vo.PostVO;
-import com.yupi.springbootinit.service.PostService;
-import com.yupi.springbootinit.service.UserService;
+import com.deng.springbootinit.annotation.AuthCheck;
+import com.deng.springbootinit.common.BaseResponse;
+import com.deng.springbootinit.common.DeleteRequest;
+import com.deng.springbootinit.common.ErrorCode;
+import com.deng.springbootinit.common.ResultUtils;
+import com.deng.springbootinit.constant.UserConstant;
+import com.deng.springbootinit.exception.BusinessException;
+import com.deng.springbootinit.exception.ThrowUtils;
+import com.deng.springbootinit.model.dto.post.PostAddRequest;
+import com.deng.springbootinit.model.dto.post.PostEditRequest;
+import com.deng.springbootinit.model.dto.post.PostQueryRequest;
+import com.deng.springbootinit.model.dto.post.PostUpdateRequest;
+import com.deng.springbootinit.model.entity.Post;
+import com.deng.springbootinit.model.entity.UserInfo;
+import com.deng.springbootinit.model.vo.PostVO;
+import com.deng.springbootinit.service.PostService;
+import com.deng.springbootinit.service.UserService;
 import java.util.List;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -68,8 +68,8 @@ public class PostController {
             post.setTags(JSONUtil.toJsonStr(tags));
         }
         postService.validPost(post, true);
-        User loginUser = userService.getLoginUser(request);
-        post.setUserId(loginUser.getId());
+        UserInfo loginUserInfo = userService.getLoginUser(request);
+        post.setUserId(loginUserInfo.getId());
         post.setFavourNum(0);
         post.setThumbNum(0);
         boolean result = postService.save(post);
@@ -90,13 +90,13 @@ public class PostController {
         if (deleteRequest == null || deleteRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        User user = userService.getLoginUser(request);
+        UserInfo userInfo = userService.getLoginUser(request);
         long id = deleteRequest.getId();
         // 判断是否存在
         Post oldPost = postService.getById(id);
         ThrowUtils.throwIf(oldPost == null, ErrorCode.NOT_FOUND_ERROR);
         // 仅本人或管理员可删除
-        if (!oldPost.getUserId().equals(user.getId()) && !userService.isAdmin(request)) {
+        if (!oldPost.getUserId().equals(userInfo.getId()) && !userService.isAdmin(request)) {
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
         }
         boolean b = postService.removeById(id);
@@ -197,8 +197,8 @@ public class PostController {
         if (postQueryRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        User loginUser = userService.getLoginUser(request);
-        postQueryRequest.setUserId(loginUser.getId());
+        UserInfo loginUserInfo = userService.getLoginUser(request);
+        postQueryRequest.setUserId(loginUserInfo.getId());
         long current = postQueryRequest.getCurrent();
         long size = postQueryRequest.getPageSize();
         // 限制爬虫
@@ -247,13 +247,13 @@ public class PostController {
         }
         // 参数校验
         postService.validPost(post, false);
-        User loginUser = userService.getLoginUser(request);
+        UserInfo loginUserInfo = userService.getLoginUser(request);
         long id = postEditRequest.getId();
         // 判断是否存在
         Post oldPost = postService.getById(id);
         ThrowUtils.throwIf(oldPost == null, ErrorCode.NOT_FOUND_ERROR);
         // 仅本人或管理员可编辑
-        if (!oldPost.getUserId().equals(loginUser.getId()) && !userService.isAdmin(loginUser)) {
+        if (!oldPost.getUserId().equals(loginUserInfo.getId()) && !userService.isAdmin(loginUserInfo)) {
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
         }
         boolean result = postService.updateById(post);

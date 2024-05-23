@@ -1,18 +1,18 @@
-package com.yupi.springbootinit.service.impl;
+package com.deng.springbootinit.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.yupi.springbootinit.common.ErrorCode;
-import com.yupi.springbootinit.exception.BusinessException;
-import com.yupi.springbootinit.mapper.PostFavourMapper;
-import com.yupi.springbootinit.model.entity.Post;
-import com.yupi.springbootinit.model.entity.PostFavour;
-import com.yupi.springbootinit.model.entity.User;
-import com.yupi.springbootinit.service.PostFavourService;
-import com.yupi.springbootinit.service.PostService;
+import com.deng.springbootinit.common.ErrorCode;
+import com.deng.springbootinit.exception.BusinessException;
+import com.deng.springbootinit.mapper.PostFavourMapper;
+import com.deng.springbootinit.model.entity.Post;
+import com.deng.springbootinit.model.entity.PostFavour;
+import com.deng.springbootinit.model.entity.UserInfo;
+import com.deng.springbootinit.service.PostFavourService;
+import com.deng.springbootinit.service.PostService;
 import javax.annotation.Resource;
 import org.springframework.aop.framework.AopContext;
 import org.springframework.stereotype.Service;
@@ -35,18 +35,18 @@ public class PostFavourServiceImpl extends ServiceImpl<PostFavourMapper, PostFav
      * 帖子收藏
      *
      * @param postId
-     * @param loginUser
+     * @param loginUserInfo
      * @return
      */
     @Override
-    public int doPostFavour(long postId, User loginUser) {
+    public int doPostFavour(long postId, UserInfo loginUserInfo) {
         // 判断是否存在
         Post post = postService.getById(postId);
         if (post == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
         // 是否已帖子收藏
-        long userId = loginUser.getId();
+        long userId = loginUserInfo.getId();
         // 每个用户串行帖子收藏
         // 锁必须要包裹住事务方法
         PostFavourService postFavourService = (PostFavourService) AopContext.currentProxy();

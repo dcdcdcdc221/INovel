@@ -1,16 +1,16 @@
-package com.yupi.springbootinit.controller;
+package com.deng.springbootinit.controller;
 
 import cn.hutool.core.io.FileUtil;
-import com.yupi.springbootinit.common.BaseResponse;
-import com.yupi.springbootinit.common.ErrorCode;
-import com.yupi.springbootinit.common.ResultUtils;
-import com.yupi.springbootinit.constant.FileConstant;
-import com.yupi.springbootinit.exception.BusinessException;
-import com.yupi.springbootinit.manager.CosManager;
-import com.yupi.springbootinit.model.dto.file.UploadFileRequest;
-import com.yupi.springbootinit.model.entity.User;
-import com.yupi.springbootinit.model.enums.FileUploadBizEnum;
-import com.yupi.springbootinit.service.UserService;
+import com.deng.springbootinit.common.BaseResponse;
+import com.deng.springbootinit.common.ErrorCode;
+import com.deng.springbootinit.common.ResultUtils;
+import com.deng.springbootinit.constant.FileConstant;
+import com.deng.springbootinit.exception.BusinessException;
+import com.deng.springbootinit.manager.CosManager;
+import com.deng.springbootinit.model.dto.file.UploadFileRequest;
+import com.deng.springbootinit.model.entity.UserInfo;
+import com.deng.springbootinit.model.enums.FileUploadBizEnum;
+import com.deng.springbootinit.service.UserService;
 import java.io.File;
 import java.util.Arrays;
 import javax.annotation.Resource;
@@ -57,11 +57,11 @@ public class FileController {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         validFile(multipartFile, fileUploadBizEnum);
-        User loginUser = userService.getLoginUser(request);
+        UserInfo loginUserInfo = userService.getLoginUser(request);
         // 文件目录：根据业务、用户来划分
         String uuid = RandomStringUtils.randomAlphanumeric(8);
         String filename = uuid + "-" + multipartFile.getOriginalFilename();
-        String filepath = String.format("/%s/%s/%s", fileUploadBizEnum.getValue(), loginUser.getId(), filename);
+        String filepath = String.format("/%s/%s/%s", fileUploadBizEnum.getValue(), loginUserInfo.getId(), filename);
         File file = null;
         try {
             // 上传文件

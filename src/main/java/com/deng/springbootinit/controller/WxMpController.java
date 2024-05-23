@@ -1,6 +1,6 @@
-package com.yupi.springbootinit.controller;
+package com.deng.springbootinit.controller;
 
-import com.yupi.springbootinit.wxmp.WxMpConstant;
+import com.deng.springbootinit.wxmp.WxMpConstant;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;

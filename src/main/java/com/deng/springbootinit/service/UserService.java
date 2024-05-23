@@ -1,11 +1,11 @@
-package com.yupi.springbootinit.service;
+package com.deng.springbootinit.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.yupi.springbootinit.model.dto.user.UserQueryRequest;
-import com.yupi.springbootinit.model.entity.User;
-import com.yupi.springbootinit.model.vo.LoginUserVO;
-import com.yupi.springbootinit.model.vo.UserVO;
+import com.deng.springbootinit.model.dto.user.UserQueryRequest;
+import com.deng.springbootinit.model.entity.UserInfo;
+import com.deng.springbootinit.model.vo.LoginUserVO;
+import com.deng.springbootinit.model.vo.UserVO;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
@@ -16,7 +16,7 @@ import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
  * @author <a href="https://github.com/liyupi">程序员鱼皮</a>
  * @from <a href="https://yupi.icu">编程导航知识星球</a>
  */
-public interface UserService extends IService<User> {
+public interface UserService extends IService<UserInfo> {
 
     /**
      * 用户注册
@@ -53,7 +53,7 @@ public interface UserService extends IService<User> {
      * @param request
      * @return
      */
-    User getLoginUser(HttpServletRequest request);
+    UserInfo getLoginUser(HttpServletRequest request);
 
     /**
      * 获取当前登录用户（允许未登录）
@@ -61,7 +61,7 @@ public interface UserService extends IService<User> {
      * @param request
      * @return
      */
-    User getLoginUserPermitNull(HttpServletRequest request);
+    UserInfo getLoginUserPermitNull(HttpServletRequest request);
 
     /**
      * 是否为管理员
@@ -74,10 +74,10 @@ public interface UserService extends IService<User> {
     /**
      * 是否为管理员
      *
-     * @param user
+     * @param userInfo
      * @return
      */
-    boolean isAdmin(User user);
+    boolean isAdmin(UserInfo userInfo);
 
     /**
      * 用户注销
@@ -92,23 +92,23 @@ public interface UserService extends IService<User> {
      *
      * @return
      */
-    LoginUserVO getLoginUserVO(User user);
+    LoginUserVO getLoginUserVO(UserInfo userInfo);
 
     /**
      * 获取脱敏的用户信息
      *
-     * @param user
+     * @param userInfo
      * @return
      */
-    UserVO getUserVO(User user);
+    UserVO getUserVO(UserInfo userInfo);
 
     /**
      * 获取脱敏的用户信息
      *
-     * @param userList
+     * @param userInfoList
      * @return
      */
-    List<UserVO> getUserVO(List<User> userList);
+    List<UserVO> getUserVO(List<UserInfo> userInfoList);
 
     /**
      * 获取查询条件
@@ -116,6 +116,6 @@ public interface UserService extends IService<User> {
      * @param userQueryRequest
      * @return
      */
-    QueryWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest);
+    QueryWrapper<UserInfo> getQueryWrapper(UserQueryRequest userQueryRequest);
 
 }

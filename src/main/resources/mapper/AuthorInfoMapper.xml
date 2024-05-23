@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.deng.springbootinit.mapper.AuthorInfoMapper">
+
+    <resultMap id="BaseResultMap" type="com.deng.springbootinit.model.entity.AuthorInfo">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="inviteCode" column="inviteCode" jdbcType="VARCHAR"/>
+            <result property="penName" column="penName" jdbcType="VARCHAR"/>
+            <result property="phone" column="phone" jdbcType="VARCHAR"/>
+            <result property="chatAccount" column="chat_account" jdbcType="VARCHAR"/>
+            <result property="email" column="email" jdbcType="VARCHAR"/>
+            <result property="workDirection" column="workDirection" jdbcType="TINYINT"/>
+            <result property="status" column="status" jdbcType="TINYINT"/>
+            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+            <result property="userAccount" column="userAccount" jdbcType="VARCHAR"/>
+
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,inviteCode,
+        penName,phone,chat_account,
+        email,workDirection,status,
+        createTime,updateTime,userAccount
+    </sql>
+</mapper>

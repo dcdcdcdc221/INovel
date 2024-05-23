@@ -12,7 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
  * @from <a href="https://yupi.icu">编程导航知识星球</a>
  */
 @SpringBootTest
-public class UserServiceTest {
+public class UserInfoServiceTest {
 
     @Resource
     private UserService userService;

@@ -1,26 +1,26 @@
-package com.yupi.springbootinit.service.impl;
+package com.deng.springbootinit.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.yupi.springbootinit.common.ErrorCode;
-import com.yupi.springbootinit.constant.CommonConstant;
-import com.yupi.springbootinit.exception.BusinessException;
-import com.yupi.springbootinit.exception.ThrowUtils;
-import com.yupi.springbootinit.mapper.PostFavourMapper;
-import com.yupi.springbootinit.mapper.PostMapper;
-import com.yupi.springbootinit.mapper.PostThumbMapper;
-import com.yupi.springbootinit.model.dto.post.PostEsDTO;
-import com.yupi.springbootinit.model.dto.post.PostQueryRequest;
-import com.yupi.springbootinit.model.entity.Post;
-import com.yupi.springbootinit.model.entity.PostFavour;
-import com.yupi.springbootinit.model.entity.PostThumb;
-import com.yupi.springbootinit.model.entity.User;
-import com.yupi.springbootinit.model.vo.PostVO;
-import com.yupi.springbootinit.model.vo.UserVO;
-import com.yupi.springbootinit.service.PostService;
-import com.yupi.springbootinit.service.UserService;
-import com.yupi.springbootinit.utils.SqlUtils;
+import com.deng.springbootinit.common.ErrorCode;
+import com.deng.springbootinit.constant.CommonConstant;
+import com.deng.springbootinit.exception.BusinessException;
+import com.deng.springbootinit.exception.ThrowUtils;
+import com.deng.springbootinit.mapper.PostFavourMapper;
+import com.deng.springbootinit.mapper.PostMapper;
+import com.deng.springbootinit.mapper.PostThumbMapper;
+import com.deng.springbootinit.model.dto.post.PostEsDTO;
+import com.deng.springbootinit.model.dto.post.PostQueryRequest;
+import com.deng.springbootinit.model.entity.Post;
+import com.deng.springbootinit.model.entity.PostFavour;
+import com.deng.springbootinit.model.entity.PostThumb;
+import com.deng.springbootinit.model.entity.UserInfo;
+import com.deng.springbootinit.model.vo.PostVO;
+import com.deng.springbootinit.model.vo.UserVO;
+import com.deng.springbootinit.service.PostService;
+import com.deng.springbootinit.service.UserService;
+import com.deng.springbootinit.utils.SqlUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -232,25 +232,25 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         long postId = post.getId();
         // 1. 关联查询用户信息
         Long userId = post.getUserId();
-        User user = null;
+        UserInfo userInfo = null;
         if (userId != null && userId > 0) {
-            user = userService.getById(userId);
+            userInfo = userService.getById(userId);
         }
-        UserVO userVO = userService.getUserVO(user);
+        UserVO userVO = userService.getUserVO(userInfo);
         postVO.setUser(userVO);
         // 2. 已登录，获取用户点赞、收藏状态
-        User loginUser = userService.getLoginUserPermitNull(request);
-        if (loginUser != null) {
+        UserInfo loginUserInfo = userService.getLoginUserPermitNull(request);
+        if (loginUserInfo != null) {
             // 获取点赞
             QueryWrapper<PostThumb> postThumbQueryWrapper = new QueryWrapper<>();
             postThumbQueryWrapper.in("postId", postId);
-            postThumbQueryWrapper.eq("userId", loginUser.getId());
+            postThumbQueryWrapper.eq("userId", loginUserInfo.getId());
             PostThumb postThumb = postThumbMapper.selectOne(postThumbQueryWrapper);
             postVO.setHasThumb(postThumb != null);
             // 获取收藏
             QueryWrapper<PostFavour> postFavourQueryWrapper = new QueryWrapper<>();
             postFavourQueryWrapper.in("postId", postId);
-            postFavourQueryWrapper.eq("userId", loginUser.getId());
+            postFavourQueryWrapper.eq("userId", loginUserInfo.getId());
             PostFavour postFavour = postFavourMapper.selectOne(postFavourQueryWrapper);
             postVO.setHasFavour(postFavour != null);
         }
@@ -266,25 +266,25 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         }
         // 1. 关联查询用户信息
         Set<Long> userIdSet = postList.stream().map(Post::getUserId).collect(Collectors.toSet());
-        Map<Long, List<User>> userIdUserListMap = userService.listByIds(userIdSet).stream()
-                .collect(Collectors.groupingBy(User::getId));
+        Map<Long, List<UserInfo>> userIdUserListMap = userService.listByIds(userIdSet).stream()
+                .collect(Collectors.groupingBy(UserInfo::getId));
         // 2. 已登录，获取用户点赞、收藏状态
         Map<Long, Boolean> postIdHasThumbMap = new HashMap<>();
         Map<Long, Boolean> postIdHasFavourMap = new HashMap<>();
-        User loginUser = userService.getLoginUserPermitNull(request);
-        if (loginUser != null) {
+        UserInfo loginUserInfo = userService.getLoginUserPermitNull(request);
+        if (loginUserInfo != null) {
             Set<Long> postIdSet = postList.stream().map(Post::getId).collect(Collectors.toSet());
-            loginUser = userService.getLoginUser(request);
+            loginUserInfo = userService.getLoginUser(request);
             // 获取点赞
             QueryWrapper<PostThumb> postThumbQueryWrapper = new QueryWrapper<>();
             postThumbQueryWrapper.in("postId", postIdSet);
-            postThumbQueryWrapper.eq("userId", loginUser.getId());
+            postThumbQueryWrapper.eq("userId", loginUserInfo.getId());
             List<PostThumb> postPostThumbList = postThumbMapper.selectList(postThumbQueryWrapper);
             postPostThumbList.forEach(postPostThumb -> postIdHasThumbMap.put(postPostThumb.getPostId(), true));
             // 获取收藏
             QueryWrapper<PostFavour> postFavourQueryWrapper = new QueryWrapper<>();
             postFavourQueryWrapper.in("postId", postIdSet);
-            postFavourQueryWrapper.eq("userId", loginUser.getId());
+            postFavourQueryWrapper.eq("userId", loginUserInfo.getId());
             List<PostFavour> postFavourList = postFavourMapper.selectList(postFavourQueryWrapper);
             postFavourList.forEach(postFavour -> postIdHasFavourMap.put(postFavour.getPostId(), true));
         }
@@ -292,11 +292,11 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         List<PostVO> postVOList = postList.stream().map(post -> {
             PostVO postVO = PostVO.objToVo(post);
             Long userId = post.getUserId();
-            User user = null;
+            UserInfo userInfo = null;
             if (userIdUserListMap.containsKey(userId)) {
-                user = userIdUserListMap.get(userId).get(0);
+                userInfo = userIdUserListMap.get(userId).get(0);
             }
-            postVO.setUser(userService.getUserVO(user));
+            postVO.setUser(userService.getUserVO(userInfo));
             postVO.setHasThumb(postIdHasThumbMap.getOrDefault(post.getId(), false));
             postVO.setHasFavour(postIdHasFavourMap.getOrDefault(post.getId(), false));
             return postVO;
