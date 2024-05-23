@@ -172,10 +172,11 @@ PUT post_v1
 
 ```
 // 指定生成参数
-String packageName = "com.yupi.springbootinit";
+String packageName = "com.deng.springbootinit";
 String dataName = "用户评论";
 String dataKey = "userComment";
 String upperDataKey = "UserComment";
 ```
 
 生成代码后，可以移动到实际项目中，并且按照 `// todo` 注释的提示来针对自己的业务需求进行修改。
+"# INovel" 

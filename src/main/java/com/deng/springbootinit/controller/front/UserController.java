@@ -1,25 +1,25 @@
-package com.yupi.springbootinit.controller;
+package com.deng.springbootinit.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.yupi.springbootinit.annotation.AuthCheck;
-import com.yupi.springbootinit.common.BaseResponse;
-import com.yupi.springbootinit.common.DeleteRequest;
-import com.yupi.springbootinit.common.ErrorCode;
-import com.yupi.springbootinit.common.ResultUtils;
-import com.yupi.springbootinit.config.WxOpenConfig;
-import com.yupi.springbootinit.constant.UserConstant;
-import com.yupi.springbootinit.exception.BusinessException;
-import com.yupi.springbootinit.exception.ThrowUtils;
-import com.yupi.springbootinit.model.dto.user.UserAddRequest;
-import com.yupi.springbootinit.model.dto.user.UserLoginRequest;
-import com.yupi.springbootinit.model.dto.user.UserQueryRequest;
-import com.yupi.springbootinit.model.dto.user.UserRegisterRequest;
-import com.yupi.springbootinit.model.dto.user.UserUpdateMyRequest;
-import com.yupi.springbootinit.model.dto.user.UserUpdateRequest;
-import com.yupi.springbootinit.model.entity.User;
-import com.yupi.springbootinit.model.vo.LoginUserVO;
-import com.yupi.springbootinit.model.vo.UserVO;
-import com.yupi.springbootinit.service.UserService;
+import com.deng.springbootinit.annotation.AuthCheck;
+import com.deng.springbootinit.common.BaseResponse;
+import com.deng.springbootinit.common.DeleteRequest;
+import com.deng.springbootinit.common.ErrorCode;
+import com.deng.springbootinit.common.ResultUtils;
+import com.deng.springbootinit.config.WxOpenConfig;
+import com.deng.springbootinit.constant.UserConstant;
+import com.deng.springbootinit.exception.BusinessException;
+import com.deng.springbootinit.exception.ThrowUtils;
+import com.deng.springbootinit.model.dto.user.UserAddRequest;
+import com.deng.springbootinit.model.dto.user.UserLoginRequest;
+import com.deng.springbootinit.model.dto.user.UserQueryRequest;
+import com.deng.springbootinit.model.dto.user.UserRegisterRequest;
+import com.deng.springbootinit.model.dto.user.UserUpdateMyRequest;
+import com.deng.springbootinit.model.dto.user.UserUpdateRequest;
+import com.deng.springbootinit.model.entity.UserInfo;
+import com.deng.springbootinit.model.vo.LoginUserVO;
+import com.deng.springbootinit.model.vo.UserVO;
+import com.deng.springbootinit.service.UserService;
 
 import java.util.List;
 import javax.annotation.Resource;
@@ -40,7 +40,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import static com.yupi.springbootinit.service.impl.UserServiceImpl.SALT;
+import static com.deng.springbootinit.service.impl.UserServiceImpl.SALT;
 
 /**
  * 用户接口
@@ -149,8 +149,8 @@ public class UserController {
      */
     @GetMapping("/get/login")
     public BaseResponse<LoginUserVO> getLoginUser(HttpServletRequest request) {
-        User user = userService.getLoginUser(request);
-        return ResultUtils.success(userService.getLoginUserVO(user));
+        UserInfo userInfo = userService.getLoginUser(request);
+        return ResultUtils.success(userService.getLoginUserVO(userInfo));
     }
 
     // endregion
@@ -170,15 +170,15 @@ public class UserController {
         if (userAddRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        User user = new User();
-        BeanUtils.copyProperties(userAddRequest, user);
+        UserInfo userInfo = new UserInfo();
+        BeanUtils.copyProperties(userAddRequest, userInfo);
         // 默认密码 12345678
         String defaultPassword = "12345678";
         String encryptPassword = DigestUtils.md5DigestAsHex((SALT + defaultPassword).getBytes());
-        user.setUserPassword(encryptPassword);
-        boolean result = userService.save(user);
+        userInfo.setUserPassword(encryptPassword);
+        boolean result = userService.save(userInfo);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
-        return ResultUtils.success(user.getId());
+        return ResultUtils.success(userInfo.getId());
     }
 
     /**
@@ -212,9 +212,9 @@ public class UserController {
         if (userUpdateRequest == null || userUpdateRequest.getId() == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        User user = new User();
-        BeanUtils.copyProperties(userUpdateRequest, user);
-        boolean result = userService.updateById(user);
+        UserInfo userInfo = new UserInfo();
+        BeanUtils.copyProperties(userUpdateRequest, userInfo);
+        boolean result = userService.updateById(userInfo);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         return ResultUtils.success(true);
     }
@@ -228,13 +228,13 @@ public class UserController {
      */
     @GetMapping("/get")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
-    public BaseResponse<User> getUserById(long id, HttpServletRequest request) {
+    public BaseResponse<UserInfo> getUserById(long id, HttpServletRequest request) {
         if (id <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        User user = userService.getById(id);
-        ThrowUtils.throwIf(user == null, ErrorCode.NOT_FOUND_ERROR);
-        return ResultUtils.success(user);
+        UserInfo userInfo = userService.getById(id);
+        ThrowUtils.throwIf(userInfo == null, ErrorCode.NOT_FOUND_ERROR);
+        return ResultUtils.success(userInfo);
     }
 
     /**
@@ -246,9 +246,9 @@ public class UserController {
      */
     @GetMapping("/get/vo")
     public BaseResponse<UserVO> getUserVOById(long id, HttpServletRequest request) {
-        BaseResponse<User> response = getUserById(id, request);
-        User user = response.getData();
-        return ResultUtils.success(userService.getUserVO(user));
+        BaseResponse<UserInfo> response = getUserById(id, request);
+        UserInfo userInfo = response.getData();
+        return ResultUtils.success(userService.getUserVO(userInfo));
     }
 
     /**
@@ -260,11 +260,11 @@ public class UserController {
      */
     @PostMapping("/list/page")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
-    public BaseResponse<Page<User>> listUserByPage(@RequestBody UserQueryRequest userQueryRequest,
-            HttpServletRequest request) {
+    public BaseResponse<Page<UserInfo>> listUserByPage(@RequestBody UserQueryRequest userQueryRequest,
+                                                       HttpServletRequest request) {
         long current = userQueryRequest.getCurrent();
         long size = userQueryRequest.getPageSize();
-        Page<User> userPage = userService.page(new Page<>(current, size),
+        Page<UserInfo> userPage = userService.page(new Page<>(current, size),
                 userService.getQueryWrapper(userQueryRequest));
         return ResultUtils.success(userPage);
     }
@@ -286,7 +286,7 @@ public class UserController {
         long size = userQueryRequest.getPageSize();
         // 限制爬虫
         ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
-        Page<User> userPage = userService.page(new Page<>(current, size),
+        Page<UserInfo> userPage = userService.page(new Page<>(current, size),
                 userService.getQueryWrapper(userQueryRequest));
         Page<UserVO> userVOPage = new Page<>(current, size, userPage.getTotal());
         List<UserVO> userVO = userService.getUserVO(userPage.getRecords());
@@ -309,11 +309,11 @@ public class UserController {
         if (userUpdateMyRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        User loginUser = userService.getLoginUser(request);
-        User user = new User();
-        BeanUtils.copyProperties(userUpdateMyRequest, user);
-        user.setId(loginUser.getId());
-        boolean result = userService.updateById(user);
+        UserInfo loginUserInfo = userService.getLoginUser(request);
+        UserInfo userInfo = new UserInfo();
+        BeanUtils.copyProperties(userUpdateMyRequest, userInfo);
+        userInfo.setId(loginUserInfo.getId());
+        boolean result = userService.updateById(userInfo);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         return ResultUtils.success(true);
     }
