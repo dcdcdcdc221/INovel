@@ -56,6 +56,24 @@ public class AuthorInfoServiceImpl extends ServiceImpl<AuthorInfoMapper, AuthorI
         QueryWrapper<AuthorInfo> eq = queryWrapper.eq("userAccount", userAccount);
         return authorInfoMapper.exists(eq);
     }
+
+    /**
+     * 开放给user
+     * 更新user的同时更新author的userAccount
+     * @param userAccount
+     * @return
+     */
+    @Override
+    public boolean updateUserAccount(String userAccount){
+        QueryWrapper<AuthorInfo> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<AuthorInfo> eq = queryWrapper.eq("userAccount", userAccount);
+        //查询author对象
+        AuthorInfo authorInfo = authorInfoMapper.selectOne(eq);
+        //查询id
+        Long id = authorInfo.getId();
+        int i = authorInfoMapper.updateById(authorInfo);
+
+    }
 }
 
 

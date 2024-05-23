@@ -15,4 +15,5 @@ public interface AuthorInfoService extends IService<AuthorInfo> {
 
      boolean isRegister(String userAccount);
 
+     boolean updateUserAccount (String userAccount);
 }

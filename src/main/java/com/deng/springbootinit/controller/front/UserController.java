@@ -213,7 +213,12 @@ public class UserController {
             HttpServletRequest request) {
         Long id = userUpdateRequest.getId();
         //判断是否为作者
+        UserInfo loginUser = userService.getLoginUser(request);
+        String userAccount = loginUser.getUserAccount();
         //TODO 同步插入作者
+        if(authorInfoService.isRegister(userAccount)){
+            authorInfoService.updateById()
+        }
         if (userUpdateRequest == null || userUpdateRequest.getId() == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
