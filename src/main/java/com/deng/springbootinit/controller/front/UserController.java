@@ -10,6 +10,7 @@ import com.deng.springbootinit.config.WxOpenConfig;
 import com.deng.springbootinit.constant.UserConstant;
 import com.deng.springbootinit.exception.BusinessException;
 import com.deng.springbootinit.exception.ThrowUtils;
+import com.deng.springbootinit.mapper.AuthorInfoMapper;
 import com.deng.springbootinit.model.dto.user.UserAddRequest;
 import com.deng.springbootinit.model.dto.user.UserLoginRequest;
 import com.deng.springbootinit.model.dto.user.UserQueryRequest;
@@ -19,6 +20,7 @@ import com.deng.springbootinit.model.dto.user.UserUpdateRequest;
 import com.deng.springbootinit.model.entity.UserInfo;
 import com.deng.springbootinit.model.vo.LoginUserVO;
 import com.deng.springbootinit.model.vo.UserVO;
+import com.deng.springbootinit.service.AuthorInfoService;
 import com.deng.springbootinit.service.UserService;
 
 import java.util.List;
@@ -44,9 +46,6 @@ import static com.deng.springbootinit.service.impl.UserServiceImpl.SALT;
 
 /**
  * 用户接口
- *
- * @author <a href="https://github.com/liyupi">程序员鱼皮</a>
- * @from <a href="https://yupi.icu">编程导航知识星球</a>
  */
 @RestController
 @RequestMapping("/user")
@@ -59,6 +58,9 @@ public class UserController {
     @Resource
     private WxOpenConfig wxOpenConfig;
 
+
+    @Resource
+    private AuthorInfoService authorInfoService;
     // region 登录相关
 
     /**
@@ -199,7 +201,7 @@ public class UserController {
     }
 
     /**
-     * 更新用户
+     * 更新用户(判断是否为作者，如果是也要一同更新)
      *
      * @param userUpdateRequest
      * @param request
@@ -209,6 +211,9 @@ public class UserController {
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> updateUser(@RequestBody UserUpdateRequest userUpdateRequest,
             HttpServletRequest request) {
+        Long id = userUpdateRequest.getId();
+        //判断是否为作者
+        //TODO 同步插入作者
         if (userUpdateRequest == null || userUpdateRequest.getId() == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }

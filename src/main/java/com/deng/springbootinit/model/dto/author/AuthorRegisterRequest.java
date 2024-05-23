@@ -9,10 +9,6 @@ import java.util.Date;
 @Data
 public class AuthorRegisterRequest implements Serializable {
     private static final long serialVersionUID = 3191241716373120793L;
-    /**
-     * 用户账号
-     */
-    private String userAccount;
 
 
     /**

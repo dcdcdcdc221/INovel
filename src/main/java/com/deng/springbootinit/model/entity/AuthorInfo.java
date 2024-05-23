@@ -74,7 +74,6 @@ public class AuthorInfo implements Serializable {
 
     /**
      * 账户
-     * @return
      */
     private String userAccount;
 

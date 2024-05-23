@@ -17,21 +17,20 @@ create table if not exists user_info
     index idx_unionId (unionId),
     UNIQUE KEY `pk_id` (`id`)
     ) comment '用户信息' collate = utf8mb4_unicode_ci;
-
---作者信息表
-CREATE TABLE author_info (
+drop table author_info;
+-- 作者信息表
+CREATE TABLE if not exists author_info (
 id bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
-userId bigint(20) unsigned NOT NULL COMMENT '用户ID',
+userAccount  varchar(256) not null comment '账号',
 inviteCode varchar(20) NOT NULL COMMENT '邀请码',
 penName varchar(20) NOT NULL COMMENT '笔名',
 phone varchar(20) DEFAULT NULL COMMENT '手机号码',
-chat_account varchar(50) DEFAULT NULL COMMENT 'QQ或微信账号',
+chatAccount varchar(50) DEFAULT NULL COMMENT 'QQ或微信账号',
 email varchar(50) DEFAULT NULL COMMENT '电子邮箱',
 workDirection tinyint(3) unsigned DEFAULT NULL COMMENT '作品方向;0-男频 1-女频',
 status tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0：正常;1-封禁',
-createTime datetime DEFAULT NULL COMMENT '创建时间',
-updateTime datetime DEFAULT NULL COMMENT '更新时间',
+createTime datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+updateTime datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
 PRIMARY KEY (id),
-UNIQUE KEY uk_userId (userId),
 UNIQUE KEY pk_id (id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='作者信息';
+) ENGINE=InnoDB  COLLATE=utf8mb4_unicode_ci COMMENT='作者信息';

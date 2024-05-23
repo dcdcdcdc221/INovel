@@ -10,7 +10,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 * @Entity com.deng.springbootinit.model.entity.AuthorInfo
 */
 public interface AuthorInfoMapper extends BaseMapper<AuthorInfo> {
-
 }
 
 
