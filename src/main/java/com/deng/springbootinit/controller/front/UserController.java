@@ -201,7 +201,7 @@ public class UserController {
     }
 
     /**
-     * 更新用户(判断是否为作者，如果是也要一同更新)
+     * 更新用户
      *
      * @param userUpdateRequest
      * @param request

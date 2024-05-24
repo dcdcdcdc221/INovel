@@ -1,19 +1,24 @@
 package com.deng.springbootinit.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.deng.springbootinit.common.BaseResponse;
 import com.deng.springbootinit.common.ErrorCode;
 import com.deng.springbootinit.exception.BusinessException;
 import com.deng.springbootinit.mapper.UserInfoMapper;
 import com.deng.springbootinit.model.dto.author.AuthorRegisterRequest;
 import com.deng.springbootinit.model.entity.AuthorInfo;
 import com.deng.springbootinit.model.entity.UserInfo;
+import com.deng.springbootinit.model.vo.AuthVO;
 import com.deng.springbootinit.service.AuthorInfoService;
 import com.deng.springbootinit.mapper.AuthorInfoMapper;
 import com.deng.springbootinit.service.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
 
@@ -22,6 +27,7 @@ import javax.annotation.Resource;
 * @description 针对表【author_info(作者信息)】的数据库操作Service实现
 * @createDate 2024-05-23 16:33:55
 */
+@RequestMapping("/author")
 @Service
 public class AuthorInfoServiceImpl extends ServiceImpl<AuthorInfoMapper, AuthorInfo>
     implements AuthorInfoService{
@@ -55,27 +61,6 @@ public class AuthorInfoServiceImpl extends ServiceImpl<AuthorInfoMapper, AuthorI
         QueryWrapper<AuthorInfo> queryWrapper = new QueryWrapper<>();
         QueryWrapper<AuthorInfo> eq = queryWrapper.eq("userAccount", userAccount);
         return authorInfoMapper.exists(eq);
-    }
-
-    /**
-     * 开放给user
-     * 更新user的同时更新author的userAccount
-     * @param userAccount
-     * @return
-     */
-    @Override
-    public boolean updateUserAccount(String userAccount){
-        QueryWrapper<AuthorInfo> queryWrapper = new QueryWrapper<>();
-        QueryWrapper<AuthorInfo> eq = queryWrapper.eq("userAccount", userAccount);
-        //查询author对象
-        AuthorInfo authorInfo = authorInfoMapper.selectOne(eq);
-        //查询id
-        int i = authorInfoMapper.updateById(authorInfo);
-
-        if(i < 1){
-            return false;
-        }
-        return true;
     }
 }
 

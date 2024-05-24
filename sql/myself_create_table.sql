@@ -20,17 +20,30 @@ create table if not exists user_info
 drop table author_info;
 -- 作者信息表
 CREATE TABLE if not exists author_info (
-id bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
-userAccount  varchar(256) not null comment '账号',
-inviteCode varchar(20) NOT NULL COMMENT '邀请码',
-penName varchar(20) NOT NULL COMMENT '笔名',
-phone varchar(20) DEFAULT NULL COMMENT '手机号码',
-chatAccount varchar(50) DEFAULT NULL COMMENT 'QQ或微信账号',
-email varchar(50) DEFAULT NULL COMMENT '电子邮箱',
-workDirection tinyint(3) unsigned DEFAULT NULL COMMENT '作品方向;0-男频 1-女频',
-status tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0：正常;1-封禁',
-createTime datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-updateTime datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+id bigint(20)                            unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
+userAccount                              varchar(256) not null comment '账号',
+inviteCode                               varchar(20) NOT NULL COMMENT '邀请码',
+penName                                  varchar(20) NOT NULL COMMENT '笔名',
+phone                                    varchar(20) DEFAULT NULL COMMENT '手机号码',
+chatAccount                              varchar(50) DEFAULT NULL COMMENT 'QQ或微信账号',
+email                                    varchar(50) DEFAULT NULL COMMENT '电子邮箱',
+workDirection tinyint(3)                 unsigned DEFAULT NULL COMMENT '作品方向;0-男频 1-女频',
+status tinyint(3)                        unsigned NOT NULL DEFAULT '0' COMMENT '0：正常;1-封禁',
+createTime datetime                      DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+updateTime datetime                      DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
 PRIMARY KEY (id),
 UNIQUE KEY pk_id (id)
 ) ENGINE=InnoDB  COLLATE=utf8mb4_unicode_ci COMMENT='作者信息';
+
+-- 小说推荐表
+DROP TABLE IF EXISTS home_book;
+CREATE TABLE home_book (
+id bigint(20)                           unsigned NOT NULL AUTO_INCREMENT,
+type tinyint(3)                         unsigned NOT NULL COMMENT '推荐类型;0-轮播图 1-顶部栏 2-本周强推 3-热门推荐 4-精品推荐',
+sort tinyint(3)                         unsigned NOT NULL COMMENT '推荐排序',
+bookId bigint(20)                       unsigned NOT NULL COMMENT '推荐小说ID',
+createTime datetime                     default CURRENT_TIMESTAMP COMMENT '创建时间',
+updateTime datetime                     default CURRENT_TIMESTAMP COMMENT '更新时间',
+PRIMARY KEY (id),
+UNIQUE KEY pk_id (id)
+) ENGINE=InnoDB AUTO_INCREMENT=96 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='小说推荐';
