@@ -1,9 +1,7 @@
 # INovel
 
 
-基于 Java SpringBoot 的项目初始模板，整合了常用框架和主流业务的示例代码。
-
-只需 1 分钟即可完成内容网站的后端！！！大家还可以在此基础上快速开发自己的项目。
+SpringBoot 后端模板 by [程序员鱼皮](https://github.com/liyupi)
 
 ## 主流框架 & 特性
 
