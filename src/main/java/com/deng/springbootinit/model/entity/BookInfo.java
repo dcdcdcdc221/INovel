@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -24,104 +26,105 @@ public class BookInfo implements Serializable {
     /**
      * 作品方向;0-男频 1-女频
      */
-    @TableField(value = "work_direction")
-    private Integer work_direction;
+    @TableField(value = "workDirection")
+    private Integer workDirection;
 
     /**
      * 类别ID
      */
-    @TableField(value = "category_id")
-    private Long category_id;
+    @TableField(value = "categoryId")
+    private Long categoryId;
 
     /**
      * 类别名
      */
-    @TableField(value = "category_name")
-    private String category_name;
+    @TableField(value = "categoryName")
+    private String categoryName;
 
     /**
      * 小说封面地址
      */
-    @TableField(value = "pic_url")
-    private String pic_url;
+    @TableField(value = "picUrl")
+    private String picUrl;
 
     /**
      * 小说名
      */
-    @TableField(value = "book_name")
-    private String book_name;
+    @TableField(value = "bookName")
+    private String bookName;
 
     /**
      * 作家id
      */
-    @TableField(value = "author_id")
-    private Long author_id;
+    @TableField(value = "authorId")
+    private Long authorId;
 
     /**
      * 作家名
      */
-    @TableField(value = "author_name")
-    private String author_name;
+    @TableField(value = "authorName")
+    private String authorName;
 
     /**
      * 书籍描述
      */
-    @TableField(value = "book_desc")
-    private String book_desc;
+    @TableField(value = "bookDesc")
+    private String bookDesc;
 
     /**
      * 评分;总分:10 ，真实评分 = score/10
+     * 初始值为 11，代表未开始评分
      */
     @TableField(value = "score")
-    private Integer score;
+    private Integer score = 11;
 
     /**
      * 书籍状态;0-连载中 1-已完结
      */
-    @TableField(value = "book_status")
-    private Integer book_status;
+    @TableField(value = "bookStatus")
+    private Integer bookStatus;
 
     /**
      * 点击量
      */
-    @TableField(value = "visit_count")
-    private Long visit_count;
+    @TableField(value = "visitCount")
+    private Long visitCount;
 
     /**
      * 总字数
      */
-    @TableField(value = "word_count")
-    private Integer word_count;
+    @TableField(value = "wordCount")
+    private Integer wordCount;
 
     /**
      * 评论数
      */
-    @TableField(value = "comment_count")
-    private Integer comment_count;
+    @TableField(value = "commentCount")
+    private Integer commentCount;
 
     /**
      * 最新章节ID
      */
-    @TableField(value = "last_chapter_id")
-    private Long last_chapter_id;
+    @TableField(value = "lastChapterId")
+    private Long lastChapterId;
 
     /**
      * 最新章节名
      */
-    @TableField(value = "last_chapter_name")
-    private String last_chapter_name;
+    @TableField(value = "lastChapterName")
+    private String lastChapterName;
 
     /**
      * 最新章节更新时间
      */
-    @TableField(value = "last_chapter_update_time")
-    private LocalDateTime last_chapter_update_time;
+    @TableField(value = "lastChapterUpdateTime")
+    private LocalDateTime lastChapterUpdateTime;
 
     /**
      * 是否收费;1-收费 0-免费
      */
-    @TableField(value = "is_vip")
-    private Integer is_vip;
+    @TableField(value = "isVip")
+    private Integer isVip;
 
     /**
      * 创建时间
@@ -151,23 +154,23 @@ public class BookInfo implements Serializable {
         }
         BookInfo other = (BookInfo) that;
         return (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
-            && (this.getWork_direction() == null ? other.getWork_direction() == null : this.getWork_direction().equals(other.getWork_direction()))
-            && (this.getCategory_id() == null ? other.getCategory_id() == null : this.getCategory_id().equals(other.getCategory_id()))
-            && (this.getCategory_name() == null ? other.getCategory_name() == null : this.getCategory_name().equals(other.getCategory_name()))
-            && (this.getPic_url() == null ? other.getPic_url() == null : this.getPic_url().equals(other.getPic_url()))
-            && (this.getBook_name() == null ? other.getBook_name() == null : this.getBook_name().equals(other.getBook_name()))
-            && (this.getAuthor_id() == null ? other.getAuthor_id() == null : this.getAuthor_id().equals(other.getAuthor_id()))
-            && (this.getAuthor_name() == null ? other.getAuthor_name() == null : this.getAuthor_name().equals(other.getAuthor_name()))
-            && (this.getBook_desc() == null ? other.getBook_desc() == null : this.getBook_desc().equals(other.getBook_desc()))
+            && (this.getWorkDirection() == null ? other.getWorkDirection() == null : this.getWorkDirection().equals(other.getWorkDirection()))
+            && (this.getCategoryId() == null ? other.getCategoryId() == null : this.getCategoryId().equals(other.getCategoryId()))
+            && (this.getCategoryName() == null ? other.getCategoryName() == null : this.getCategoryName().equals(other.getCategoryName()))
+            && (this.getPicUrl() == null ? other.getPicUrl() == null : this.getPicUrl().equals(other.getPicUrl()))
+            && (this.getBookName() == null ? other.getBookName() == null : this.getBookName().equals(other.getBookName()))
+            && (this.getAuthorId() == null ? other.getAuthorId() == null : this.getAuthorId().equals(other.getAuthorId()))
+            && (this.getAuthorName() == null ? other.getAuthorName() == null : this.getAuthorName().equals(other.getAuthorName()))
+            && (this.getBookDesc() == null ? other.getBookDesc() == null : this.getBookDesc().equals(other.getBookDesc()))
             && (this.getScore() == null ? other.getScore() == null : this.getScore().equals(other.getScore()))
-            && (this.getBook_status() == null ? other.getBook_status() == null : this.getBook_status().equals(other.getBook_status()))
-            && (this.getVisit_count() == null ? other.getVisit_count() == null : this.getVisit_count().equals(other.getVisit_count()))
-            && (this.getWord_count() == null ? other.getWord_count() == null : this.getWord_count().equals(other.getWord_count()))
-            && (this.getComment_count() == null ? other.getComment_count() == null : this.getComment_count().equals(other.getComment_count()))
-            && (this.getLast_chapter_id() == null ? other.getLast_chapter_id() == null : this.getLast_chapter_id().equals(other.getLast_chapter_id()))
-            && (this.getLast_chapter_name() == null ? other.getLast_chapter_name() == null : this.getLast_chapter_name().equals(other.getLast_chapter_name()))
-            && (this.getLast_chapter_update_time() == null ? other.getLast_chapter_update_time() == null : this.getLast_chapter_update_time().equals(other.getLast_chapter_update_time()))
-            && (this.getIs_vip() == null ? other.getIs_vip() == null : this.getIs_vip().equals(other.getIs_vip()))
+            && (this.getBookStatus() == null ? other.getBookStatus() == null : this.getBookStatus().equals(other.getBookStatus()))
+            && (this.getVisitCount() == null ? other.getVisitCount() == null : this.getVisitCount().equals(other.getVisitCount()))
+            && (this.getWordCount() == null ? other.getWordCount() == null : this.getWordCount().equals(other.getWordCount()))
+            && (this.getCommentCount() == null ? other.getCommentCount() == null : this.getCommentCount().equals(other.getCommentCount()))
+            && (this.getLastChapterId() == null ? other.getLastChapterId() == null : this.getLastChapterId().equals(other.getLastChapterId()))
+            && (this.getLastChapterName() == null ? other.getLastChapterName() == null : this.getLastChapterName().equals(other.getLastChapterName()))
+            && (this.getLastChapterUpdateTime() == null ? other.getLastChapterUpdateTime() == null : this.getLastChapterUpdateTime().equals(other.getLastChapterUpdateTime()))
+            && (this.getIsVip() == null ? other.getIsVip() == null : this.getIsVip().equals(other.getIsVip()))
             && (this.getCreateTime() == null ? other.getCreateTime() == null : this.getCreateTime().equals(other.getCreateTime()))
             && (this.getUpdateTime() == null ? other.getUpdateTime() == null : this.getUpdateTime().equals(other.getUpdateTime()));
     }
@@ -177,23 +180,23 @@ public class BookInfo implements Serializable {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
-        result = prime * result + ((getWork_direction() == null) ? 0 : getWork_direction().hashCode());
-        result = prime * result + ((getCategory_id() == null) ? 0 : getCategory_id().hashCode());
-        result = prime * result + ((getCategory_name() == null) ? 0 : getCategory_name().hashCode());
-        result = prime * result + ((getPic_url() == null) ? 0 : getPic_url().hashCode());
-        result = prime * result + ((getBook_name() == null) ? 0 : getBook_name().hashCode());
-        result = prime * result + ((getAuthor_id() == null) ? 0 : getAuthor_id().hashCode());
-        result = prime * result + ((getAuthor_name() == null) ? 0 : getAuthor_name().hashCode());
-        result = prime * result + ((getBook_desc() == null) ? 0 : getBook_desc().hashCode());
+        result = prime * result + ((getWorkDirection() == null) ? 0 : getWorkDirection().hashCode());
+        result = prime * result + ((getCategoryId() == null) ? 0 : getCategoryId().hashCode());
+        result = prime * result + ((getCategoryName() == null) ? 0 : getCategoryName().hashCode());
+        result = prime * result + ((getPicUrl() == null) ? 0 : getPicUrl().hashCode());
+        result = prime * result + ((getBookName() == null) ? 0 : getBookName().hashCode());
+        result = prime * result + ((getAuthorId() == null) ? 0 : getAuthorId().hashCode());
+        result = prime * result + ((getAuthorName() == null) ? 0 : getAuthorName().hashCode());
+        result = prime * result + ((getBookDesc() == null) ? 0 : getBookDesc().hashCode());
         result = prime * result + ((getScore() == null) ? 0 : getScore().hashCode());
-        result = prime * result + ((getBook_status() == null) ? 0 : getBook_status().hashCode());
-        result = prime * result + ((getVisit_count() == null) ? 0 : getVisit_count().hashCode());
-        result = prime * result + ((getWord_count() == null) ? 0 : getWord_count().hashCode());
-        result = prime * result + ((getComment_count() == null) ? 0 : getComment_count().hashCode());
-        result = prime * result + ((getLast_chapter_id() == null) ? 0 : getLast_chapter_id().hashCode());
-        result = prime * result + ((getLast_chapter_name() == null) ? 0 : getLast_chapter_name().hashCode());
-        result = prime * result + ((getLast_chapter_update_time() == null) ? 0 : getLast_chapter_update_time().hashCode());
-        result = prime * result + ((getIs_vip() == null) ? 0 : getIs_vip().hashCode());
+        result = prime * result + ((getBookStatus() == null) ? 0 : getBookStatus().hashCode());
+        result = prime * result + ((getVisitCount() == null) ? 0 : getVisitCount().hashCode());
+        result = prime * result + ((getWordCount() == null) ? 0 : getWordCount().hashCode());
+        result = prime * result + ((getCommentCount() == null) ? 0 : getCommentCount().hashCode());
+        result = prime * result + ((getLastChapterId() == null) ? 0 : getLastChapterId().hashCode());
+        result = prime * result + ((getLastChapterName() == null) ? 0 : getLastChapterName().hashCode());
+        result = prime * result + ((getLastChapterUpdateTime() == null) ? 0 : getLastChapterUpdateTime().hashCode());
+        result = prime * result + ((getIsVip() == null) ? 0 : getIsVip().hashCode());
         result = prime * result + ((getCreateTime() == null) ? 0 : getCreateTime().hashCode());
         result = prime * result + ((getUpdateTime() == null) ? 0 : getUpdateTime().hashCode());
         return result;
@@ -206,23 +209,23 @@ public class BookInfo implements Serializable {
         sb.append(" [");
         sb.append("Hash = ").append(hashCode());
         sb.append(", id=").append(id);
-        sb.append(", work_direction=").append(work_direction);
-        sb.append(", category_id=").append(category_id);
-        sb.append(", category_name=").append(category_name);
-        sb.append(", pic_url=").append(pic_url);
-        sb.append(", book_name=").append(book_name);
-        sb.append(", author_id=").append(author_id);
-        sb.append(", author_name=").append(author_name);
-        sb.append(", book_desc=").append(book_desc);
+        sb.append(", workDirection=").append(workDirection);
+        sb.append(", categoryId=").append(categoryId);
+        sb.append(", categoryName=").append(categoryName);
+        sb.append(", picUrl=").append(picUrl);
+        sb.append(", bookName=").append(bookName);
+        sb.append(", authorId=").append(authorId);
+        sb.append(", authorName=").append(authorName);
+        sb.append(", bookDesc=").append(bookDesc);
         sb.append(", score=").append(score);
-        sb.append(", book_status=").append(book_status);
-        sb.append(", visit_count=").append(visit_count);
-        sb.append(", word_count=").append(word_count);
-        sb.append(", comment_count=").append(comment_count);
-        sb.append(", last_chapter_id=").append(last_chapter_id);
-        sb.append(", last_chapter_name=").append(last_chapter_name);
-        sb.append(", last_chapter_update_time=").append(last_chapter_update_time);
-        sb.append(", is_vip=").append(is_vip);
+        sb.append(", bookStatus=").append(bookStatus);
+        sb.append(", visitCount=").append(visitCount);
+        sb.append(", wordCount=").append(wordCount);
+        sb.append(", commentCount=").append(commentCount);
+        sb.append(", lastChapterId=").append(lastChapterId);
+        sb.append(", lastChapterName=").append(lastChapterName);
+        sb.append(", lastChapterUpdateTime=").append(lastChapterUpdateTime);
+        sb.append(", isVip=").append(isVip);
         sb.append(", createTime=").append(createTime);
         sb.append(", updateTime=").append(updateTime);
         sb.append(", serialVersionUID=").append(serialVersionUID);

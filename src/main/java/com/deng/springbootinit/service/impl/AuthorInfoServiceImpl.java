@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
 * @author a9090
@@ -34,12 +36,24 @@ public class AuthorInfoServiceImpl extends ServiceImpl<AuthorInfoMapper, AuthorI
     @Resource
     private AuthorInfoMapper authorInfoMapper;
 
+    @Resource
+    private UserService userService;
 
+
+    /**
+     * 注册为作家
+     * @param userAccount
+     * @param authorRegisterRequest
+     * @return
+     */
     @Override
     public long register(String userAccount,AuthorRegisterRequest authorRegisterRequest) {
         //查询是否注册过
         if(isRegister(userAccount)){
             throw new BusinessException(ErrorCode.PARAMS_ERROR,"你已经是作者了");
+        }
+        if(authorRegisterRequest == null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"请输入必要信息");
         }
         //插入
         AuthorInfo authorInfo = new AuthorInfo();
@@ -61,6 +75,24 @@ public class AuthorInfoServiceImpl extends ServiceImpl<AuthorInfoMapper, AuthorI
         QueryWrapper<AuthorInfo> queryWrapper = new QueryWrapper<>();
         QueryWrapper<AuthorInfo> eq = queryWrapper.eq("userAccount", userAccount);
         return authorInfoMapper.exists(eq);
+    }
+
+
+    /**
+     * 获取当前作者
+     * @param request
+     * @return
+     */
+    @Override
+    public AuthorInfo getCurrentAuthor(HttpServletRequest request) {
+        UserInfo loginUser = userService.getLoginUser(request);
+        if(null == loginUser){
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR,"请先登录");
+        }
+        String userAccount = loginUser.getUserAccount();
+        QueryWrapper<AuthorInfo> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<AuthorInfo> eq = queryWrapper.eq("userAccount", userAccount);
+        return authorInfoMapper.selectOne(eq);
     }
 }
 

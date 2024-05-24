@@ -13,6 +13,12 @@ public interface UserConstant {
      */
     String USER_LOGIN_STATE = "user_login";
 
+
+    /**
+     * 作者
+     */
+    String AUTHOR_REGISTERED = "author_registered";
+
     //  region 权限
 
     /**

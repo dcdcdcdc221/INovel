@@ -6,34 +6,34 @@
 
     <resultMap id="BaseResultMap" type="com.deng.springbootinit.model.entity.BookInfo">
             <id property="id" column="id" jdbcType="BIGINT"/>
-            <result property="work_direction" column="work_direction" jdbcType="TINYINT"/>
-            <result property="category_id" column="category_id" jdbcType="BIGINT"/>
-            <result property="category_name" column="category_name" jdbcType="VARCHAR"/>
-            <result property="pic_url" column="pic_url" jdbcType="VARCHAR"/>
-            <result property="book_name" column="book_name" jdbcType="VARCHAR"/>
-            <result property="author_id" column="author_id" jdbcType="BIGINT"/>
-            <result property="author_name" column="author_name" jdbcType="VARCHAR"/>
-            <result property="book_desc" column="book_desc" jdbcType="VARCHAR"/>
+            <result property="workDirection" column="workDirection" jdbcType="TINYINT"/>
+            <result property="categoryId" column="categoryId" jdbcType="BIGINT"/>
+            <result property="categoryName" column="categoryName" jdbcType="VARCHAR"/>
+            <result property="picUrl" column="picUrl" jdbcType="VARCHAR"/>
+            <result property="bookName" column="bookName" jdbcType="VARCHAR"/>
+            <result property="authorId" column="authorId" jdbcType="BIGINT"/>
+            <result property="authorName" column="authorName" jdbcType="VARCHAR"/>
+            <result property="bookDesc" column="bookDesc" jdbcType="VARCHAR"/>
             <result property="score" column="score" jdbcType="TINYINT"/>
-            <result property="book_status" column="book_status" jdbcType="TINYINT"/>
-            <result property="visit_count" column="visit_count" jdbcType="BIGINT"/>
-            <result property="word_count" column="word_count" jdbcType="INTEGER"/>
-            <result property="comment_count" column="comment_count" jdbcType="INTEGER"/>
-            <result property="last_chapter_id" column="last_chapter_id" jdbcType="BIGINT"/>
-            <result property="last_chapter_name" column="last_chapter_name" jdbcType="VARCHAR"/>
-            <result property="last_chapter_update_time" column="last_chapter_update_time" jdbcType="TIMESTAMP"/>
-            <result property="is_vip" column="is_vip" jdbcType="TINYINT"/>
+            <result property="bookStatus" column="bookStatus" jdbcType="TINYINT"/>
+            <result property="visitCount" column="visitCount" jdbcType="BIGINT"/>
+            <result property="wordCount" column="wordCount" jdbcType="INTEGER"/>
+            <result property="commentCount" column="commentCount" jdbcType="INTEGER"/>
+            <result property="lastChapterId" column="lastChapterId" jdbcType="BIGINT"/>
+            <result property="lastChapterName" column="lastChapterName" jdbcType="VARCHAR"/>
+            <result property="lastChapterUpdateTime" column="lastChapterUpdateTime" jdbcType="TIMESTAMP"/>
+            <result property="isVip" column="isVip" jdbcType="TINYINT"/>
             <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
             <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,work_direction,category_id,
-        category_name,pic_url,book_name,
-        author_id,author_name,book_desc,
-        score,book_status,visit_count,
-        word_count,comment_count,last_chapter_id,
-        last_chapter_name,last_chapter_update_time,is_vip,
+        id,workDirection,categoryId,
+        categoryName,picUrl,bookName,
+        authorId,authorName,bookDesc,
+        score,bookStatus,visitCount,
+        wordCount,commentCount,lastChapterId,
+        lastChapterName,lastChapterUpdateTime,isVip,
         createTime,updateTime
     </sql>
 </mapper>
