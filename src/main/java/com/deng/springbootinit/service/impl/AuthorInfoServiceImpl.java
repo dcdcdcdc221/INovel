@@ -70,9 +70,12 @@ public class AuthorInfoServiceImpl extends ServiceImpl<AuthorInfoMapper, AuthorI
         //查询author对象
         AuthorInfo authorInfo = authorInfoMapper.selectOne(eq);
         //查询id
-        Long id = authorInfo.getId();
         int i = authorInfoMapper.updateById(authorInfo);
 
+        if(i < 1){
+            return false;
+        }
+        return true;
     }
 }
 

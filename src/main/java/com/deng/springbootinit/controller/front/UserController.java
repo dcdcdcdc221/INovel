@@ -211,19 +211,14 @@ public class UserController {
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> updateUser(@RequestBody UserUpdateRequest userUpdateRequest,
             HttpServletRequest request) {
-        Long id = userUpdateRequest.getId();
-        //判断是否为作者
-        UserInfo loginUser = userService.getLoginUser(request);
-        String userAccount = loginUser.getUserAccount();
-        //TODO 同步插入作者
-        if(authorInfoService.isRegister(userAccount)){
-            authorInfoService.updateById()
-        }
         if (userUpdateRequest == null || userUpdateRequest.getId() == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         UserInfo userInfo = new UserInfo();
         BeanUtils.copyProperties(userUpdateRequest, userInfo);
+        if(null == userInfo){
+            log.info("UserInfo is null");
+        }
         boolean result = userService.updateById(userInfo);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         return ResultUtils.success(true);
