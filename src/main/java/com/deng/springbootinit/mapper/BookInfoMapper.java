@@ -1,7 +1,7 @@
 package com.deng.springbootinit.mapper;
 
-import com.deng.springbootinit.model.entity.BookInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.deng.springbootinit.model.entity.BookInfo;
 
 /**
 * @author a9090

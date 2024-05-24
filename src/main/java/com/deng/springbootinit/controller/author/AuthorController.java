@@ -1,14 +1,13 @@
 package com.deng.springbootinit.controller.author;
 
 import com.deng.springbootinit.common.BaseResponse;
-import com.deng.springbootinit.common.ErrorCode;
 import com.deng.springbootinit.common.ResultUtils;
-import com.deng.springbootinit.exception.BusinessException;
 import com.deng.springbootinit.model.dto.author.AuthorRegisterRequest;
+import com.deng.springbootinit.model.dto.home.book.BookAddReqDto;
 import com.deng.springbootinit.model.entity.UserInfo;
 import com.deng.springbootinit.service.AuthorInfoService;
+import com.deng.springbootinit.service.BookInfoService;
 import com.deng.springbootinit.service.UserService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -24,6 +23,9 @@ public class AuthorController {
     @Resource
     private UserService userService;
 
+    @Resource
+    private BookInfoService bookInfoService;
+
     /**
      * 用户注册
      * @param request
@@ -37,5 +39,12 @@ public class AuthorController {
         String userAccount = loginUser.getUserAccount();
         long register = authorInfoService.register(userAccount,authorRegisterRequest);
         return ResultUtils.success(register);
+    }
+
+
+    @PostMapping("/book/published")
+    public BaseResponse<Long> publishBook(@Valid @RequestBody BookAddReqDto bookAddReqDto,HttpServletRequest request){
+        Long result = bookInfoService.saveBook(bookAddReqDto, request);
+        return ResultUtils.success(result);
     }
 }
