@@ -84,5 +84,4 @@ CREATE TABLE book_info
     KEY idx_lastChapterUpdateTime (lastChapterUpdateTime) USING BTREE
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1431630596354977793
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci COMMENT ='小说信息';
+  DEFAULT CHARSET = utf8mb4 COMMENT ='小说信息';
