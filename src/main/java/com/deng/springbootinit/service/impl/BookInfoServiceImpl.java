@@ -1,20 +1,27 @@
 package com.deng.springbootinit.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.deng.springbootinit.common.ErrorCode;
 import com.deng.springbootinit.exception.BusinessException;
+import com.deng.springbootinit.mapper.AuthorInfoMapper;
 import com.deng.springbootinit.mapper.BookInfoMapper;
+import com.deng.springbootinit.model.dto.PageReqDto;
+import com.deng.springbootinit.model.dto.PageRespDto;
+import com.deng.springbootinit.model.dto.book.BookInfoRespDto;
 import com.deng.springbootinit.model.dto.home.book.BookAddReqDto;
 import com.deng.springbootinit.model.entity.AuthorInfo;
 import com.deng.springbootinit.model.entity.BookInfo;
 import com.deng.springbootinit.service.AuthorInfoService;
 import com.deng.springbootinit.service.BookInfoService;
+import com.deng.springbootinit.service.UserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.stream.Collectors;
 
 /**
 * @author a9090
@@ -25,10 +32,16 @@ import javax.servlet.http.HttpServletRequest;
 public class BookInfoServiceImpl extends ServiceImpl<BookInfoMapper, BookInfo>
     implements BookInfoService{
     @Resource
-    BookInfoMapper bookInfoMapper;
+    private BookInfoMapper bookInfoMapper;
 
     @Resource
-    AuthorInfoService authorInfoService;
+    private AuthorInfoService authorInfoService;
+
+    @Resource
+    private UserService userService;
+
+    @Resource
+    private AuthorInfoMapper authorInfoMapper;
 
     /**
      * 存储小说
@@ -37,14 +50,21 @@ public class BookInfoServiceImpl extends ServiceImpl<BookInfoMapper, BookInfo>
      * @return
      */
     @Override
-    public Long saveBook(BookAddReqDto bookAddReqDto, HttpServletRequest request) {
+    public Boolean saveBook(BookAddReqDto bookAddReqDto, HttpServletRequest request) {
         //校验是否异常
         if(null == bookInfoMapper && null == request){
             return null;
         }
+        //校验用户是否为作家
+        if(authorInfoService.getCurrentAuthor(request) == null){
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR,"你不是作家没有权限发布书籍");
+        }
         //校验小说名是否已经存在
         QueryWrapper<BookInfo> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("bookName", bookAddReqDto.getBookName());
+        QueryWrapper<BookInfo> bookName = queryWrapper.eq("bookName", bookAddReqDto.getBookName());
+        if(bookInfoMapper.selectCount(bookName) > 0){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"已经存在该书籍了");
+        }
         //设置其他信息
         BookInfo bookInfo = new BookInfo();
         BeanUtils.copyProperties(bookAddReqDto, bookInfo);
@@ -55,10 +75,40 @@ public class BookInfoServiceImpl extends ServiceImpl<BookInfoMapper, BookInfo>
         //保存小说信息
         int insert = bookInfoMapper.insert(bookInfo);
         if(insert != 1){
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"保存失败");
         }
         //返回小说id
-        return bookInfo.getId();
+        return true;
+    }
+
+
+    /**
+     * 分页查询
+     * @param pageReqDto
+     * @param request
+     * @return
+     */
+    @Override
+    public PageRespDto<BookInfoRespDto> listAuthorBooks( PageReqDto pageReqDto,
+                                                       HttpServletRequest request) {
+        Page<BookInfo> page = new Page<>();
+        page.setCurrent(pageReqDto.getPageNum());
+        page.setSize(pageReqDto.getPageSize());
+        QueryWrapper<BookInfo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id",authorInfoService.getCurrentAuthor(request))
+                .orderByDesc("createTime");
+        Page<BookInfo> bookInfoPage = bookInfoMapper.selectPage(page, queryWrapper);
+
+        return PageRespDto.of(pageReqDto.getPageNum(), pageReqDto.getPageSize(), page.getTotal(),
+                bookInfoPage.getRecords().stream().map(result -> BookInfoRespDto.builder()
+                        .id(result.getId())
+                        .bookName(result.getBookName())
+                        .picUrl(result.getPicUrl())
+                        .categoryName(result.getCategoryName())
+                        .wordCount(result.getWordCount())
+                        .authorId(result.getAuthorId())
+                        .visitCount(result.getVisitCount())
+                        .build()).collect(Collectors.toList()));
     }
 }
 
