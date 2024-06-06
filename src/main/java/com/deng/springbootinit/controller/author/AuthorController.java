@@ -1,6 +1,5 @@
 package com.deng.springbootinit.controller.author;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.deng.springbootinit.common.BaseResponse;
 import com.deng.springbootinit.common.ResultUtils;
 import com.deng.springbootinit.model.dto.PageReqDto;
@@ -36,7 +35,8 @@ public class AuthorController {
      * @return
      */
     @PostMapping("/register")
-    public BaseResponse<Long> register (HttpServletRequest request, @Valid @RequestBody AuthorRegisterRequest authorRegisterRequest){
+    public BaseResponse<Long> register (HttpServletRequest request,
+                                        @Valid @RequestBody AuthorRegisterRequest authorRegisterRequest){
         //获取当前用户
         UserInfo loginUser = userService.getLoginUser(request);
         Long id = loginUser.getId();
@@ -63,8 +63,22 @@ public class AuthorController {
      * @param request
      * @return
      */
+    @PostMapping("/book/list")
     public BaseResponse<PageRespDto<BookInfoRespDto>> listBooks(@Valid @RequestBody PageReqDto pageReqDto,
                                                                 HttpServletRequest request){
         return ResultUtils.success(bookInfoService.listAuthorBooks(pageReqDto,request));
+    }
+
+
+    /**
+     * 判断是否已成为作家
+     * @param request
+     * @return
+     */
+    @GetMapping("/book/isRegister")
+    public BaseResponse<Boolean> isRegister(HttpServletRequest request){
+        UserInfo loginUser = userService.getLoginUser(request);
+        String userAccount = loginUser.getUserAccount();
+        return ResultUtils.success(authorInfoService.isRegister(userAccount));
     }
 }
