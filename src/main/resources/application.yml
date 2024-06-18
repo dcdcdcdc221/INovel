@@ -21,9 +21,9 @@ spring:
   # todo 需替换配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/novel
+    url: jdbc:mysql://123.60.43.230:3306/novel
     username: root
-    password: root
+    password: 123456d
   # Redis 配置
   # todo 需替换配置，然后取消注释
 #  redis:
@@ -34,8 +34,9 @@ spring:
 #    password: 123456
   redis:
     database: 1
-    host: localhost
+    host: 123.60.43.230
     port: 6379
+    password: 123456
   # Elasticsearch 配置
   # todo 需替换配置，然后取消注释
 #  elasticsearch:

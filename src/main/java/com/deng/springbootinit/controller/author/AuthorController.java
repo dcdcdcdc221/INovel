@@ -1,5 +1,6 @@
 package com.deng.springbootinit.controller.author;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.deng.springbootinit.common.BaseResponse;
 import com.deng.springbootinit.common.ResultUtils;
 import com.deng.springbootinit.model.dto.PageReqDto;
@@ -7,6 +8,7 @@ import com.deng.springbootinit.model.dto.PageRespDto;
 import com.deng.springbootinit.model.dto.author.AuthorRegisterRequest;
 import com.deng.springbootinit.model.dto.book.BookInfoRespDto;
 import com.deng.springbootinit.model.dto.home.book.BookAddReqDto;
+import com.deng.springbootinit.model.entity.BookInfo;
 import com.deng.springbootinit.model.entity.UserInfo;
 import com.deng.springbootinit.service.AuthorInfoService;
 import com.deng.springbootinit.service.BookInfoService;
@@ -57,15 +59,18 @@ public class AuthorController {
         return ResultUtils.success(bookInfoService.saveBook(bookAddReqDto, request));
     }
 
+//    @PostMapping("/book/chapter/{bookId}")
+//    public BaseResponse<Boolean> publishBookChapter(@PathVariable("bookId") String bookId,
+//                                                    )
     /**
      * 小说分页查询
      * @param pageReqDto
      * @param request
      * @return
      */
-    @PostMapping("/book/list")
-    public BaseResponse<PageRespDto<BookInfoRespDto>> listBooks(@Valid @RequestBody PageReqDto pageReqDto,
-                                                                HttpServletRequest request){
+    @GetMapping("/book/list")
+    public BaseResponse<Page<BookInfo>> listBooks(@Valid @RequestBody PageReqDto pageReqDto,
+                                                  HttpServletRequest request){
         return ResultUtils.success(bookInfoService.listAuthorBooks(pageReqDto,request));
     }
 

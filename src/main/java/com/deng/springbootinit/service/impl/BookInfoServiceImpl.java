@@ -89,26 +89,18 @@ public class BookInfoServiceImpl extends ServiceImpl<BookInfoMapper, BookInfo>
      * @return
      */
     @Override
-    public PageRespDto<BookInfoRespDto> listAuthorBooks( PageReqDto pageReqDto,
+    public Page<BookInfo> listAuthorBooks( PageReqDto pageReqDto,
                                                        HttpServletRequest request) {
-        Page<BookInfo> page = new Page<>();
-        page.setCurrent(pageReqDto.getPageNum());
-        page.setSize(pageReqDto.getPageSize());
+        AuthorInfo currentAuthor = authorInfoService.getCurrentAuthor(request);
+        if(null == currentAuthor){
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR,"请登录");
+        }
+        int pageNum = pageReqDto.getPageNum();
+        int pageSize = pageReqDto.getPageSize();
         QueryWrapper<BookInfo> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("id",authorInfoService.getCurrentAuthor(request))
-                .orderByDesc("createTime");
-        Page<BookInfo> bookInfoPage = bookInfoMapper.selectPage(page, queryWrapper);
-
-        return PageRespDto.of(pageReqDto.getPageNum(), pageReqDto.getPageSize(), page.getTotal(),
-                bookInfoPage.getRecords().stream().map(result -> BookInfoRespDto.builder()
-                        .id(result.getId())
-                        .bookName(result.getBookName())
-                        .picUrl(result.getPicUrl())
-                        .categoryName(result.getCategoryName())
-                        .wordCount(result.getWordCount())
-                        .authorId(result.getAuthorId())
-                        .visitCount(result.getVisitCount())
-                        .build()).collect(Collectors.toList()));
+        QueryWrapper<BookInfo> authorId = queryWrapper.eq("authorId", currentAuthor.getId());
+        Page<BookInfo> page = this.page(new Page<>(pageNum, pageSize), authorId);
+        return page;
     }
 }
 

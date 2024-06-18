@@ -1,5 +1,6 @@
 package com.deng.springbootinit.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.deng.springbootinit.model.dto.PageReqDto;
 import com.deng.springbootinit.model.dto.PageRespDto;
 import com.deng.springbootinit.model.dto.book.BookInfoRespDto;
@@ -29,5 +30,5 @@ public interface BookInfoService extends IService<BookInfo> {
      * @param pageReqDto
      * @return
      */
-    PageRespDto<BookInfoRespDto> listAuthorBooks(PageReqDto pageReqDto, HttpServletRequest request);
+    Page<BookInfo> listAuthorBooks(PageReqDto pageReqDto, HttpServletRequest request);
 }
