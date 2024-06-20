@@ -4,12 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.deng.springbootinit.common.ErrorCode;
+import com.deng.springbootinit.common.PageRequest;
 import com.deng.springbootinit.exception.BusinessException;
 import com.deng.springbootinit.mapper.AuthorInfoMapper;
 import com.deng.springbootinit.mapper.BookInfoMapper;
 import com.deng.springbootinit.model.dto.PageReqDto;
-import com.deng.springbootinit.model.dto.PageRespDto;
-import com.deng.springbootinit.model.dto.book.BookInfoRespDto;
 import com.deng.springbootinit.model.dto.home.book.BookAddReqDto;
 import com.deng.springbootinit.model.entity.AuthorInfo;
 import com.deng.springbootinit.model.entity.BookInfo;
@@ -21,7 +20,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.stream.Collectors;
 
 /**
 * @author a9090
@@ -89,17 +87,17 @@ public class BookInfoServiceImpl extends ServiceImpl<BookInfoMapper, BookInfo>
      * @return
      */
     @Override
-    public Page<BookInfo> listAuthorBooks( PageReqDto pageReqDto,
-                                                       HttpServletRequest request) {
+    public Page<BookInfo> listAuthorBooks(PageRequest pageReqDto,
+                                          HttpServletRequest request) {
         AuthorInfo currentAuthor = authorInfoService.getCurrentAuthor(request);
         if(null == currentAuthor){
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR,"请登录");
         }
-        int pageNum = pageReqDto.getPageNum();
+        int current = pageReqDto.getCurrent();
         int pageSize = pageReqDto.getPageSize();
         QueryWrapper<BookInfo> queryWrapper = new QueryWrapper<>();
         QueryWrapper<BookInfo> authorId = queryWrapper.eq("authorId", currentAuthor.getId());
-        Page<BookInfo> page = this.page(new Page<>(pageNum, pageSize), authorId);
+        Page<BookInfo> page = this.page(new Page<>(current, pageSize), authorId);
         return page;
     }
 }

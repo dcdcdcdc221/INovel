@@ -2,6 +2,7 @@ package com.deng.springbootinit.controller.author;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.deng.springbootinit.common.BaseResponse;
+import com.deng.springbootinit.common.PageRequest;
 import com.deng.springbootinit.common.ResultUtils;
 import com.deng.springbootinit.model.dto.PageReqDto;
 import com.deng.springbootinit.model.dto.PageRespDto;
@@ -65,12 +66,11 @@ public class AuthorController {
     /**
      * 小说分页查询
      * @param pageReqDto
-     * @param request
+
      * @return
      */
     @GetMapping("/book/list")
-    public BaseResponse<Page<BookInfo>> listBooks(@Valid @RequestBody PageReqDto pageReqDto,
-                                                  HttpServletRequest request){
+    public BaseResponse<Page<BookInfo>> listBooks(@ModelAttribute  PageRequest pageReqDto, HttpServletRequest request){
         return ResultUtils.success(bookInfoService.listAuthorBooks(pageReqDto,request));
     }
 
