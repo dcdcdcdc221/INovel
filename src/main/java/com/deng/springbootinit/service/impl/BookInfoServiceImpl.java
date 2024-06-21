@@ -8,7 +8,6 @@ import com.deng.springbootinit.common.PageRequest;
 import com.deng.springbootinit.exception.BusinessException;
 import com.deng.springbootinit.mapper.AuthorInfoMapper;
 import com.deng.springbootinit.mapper.BookInfoMapper;
-import com.deng.springbootinit.model.dto.PageReqDto;
 import com.deng.springbootinit.model.dto.chapter.ChapterAddReqDto;
 import com.deng.springbootinit.model.dto.home.book.BookAddReqDto;
 import com.deng.springbootinit.model.entity.AuthorInfo;
@@ -101,8 +100,8 @@ public class BookInfoServiceImpl extends ServiceImpl<BookInfoMapper, BookInfo>
         if(null == currentAuthor){
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR,"请登录");
         }
-        long current = pageReqDto.getCurrent();
-        long pageSize = pageReqDto.getPageSize();
+        int current = pageReqDto.getCurrent();
+        int pageSize = pageReqDto.getPageSize();
         QueryWrapper<BookInfo> queryWrapper = new QueryWrapper<>();
         QueryWrapper<BookInfo> authorId = queryWrapper.eq("authorId", currentAuthor.getId());
         Page<BookInfo> page = this.page(new Page<>(current, pageSize), authorId);

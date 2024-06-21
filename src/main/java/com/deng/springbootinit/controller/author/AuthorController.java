@@ -65,12 +65,16 @@ public class AuthorController {
     /**
      * 小说分页查询
      * @param pageReqDto
-     * @param request
+
      * @return
      */
     @GetMapping("/book/list")
+<<<<<<< HEAD
     public BaseResponse<Page<BookInfo>> listBooks(@Valid @ModelAttribute PageRequest pageReqDto,
                                                   HttpServletRequest request){
+=======
+    public BaseResponse<Page<BookInfo>> listBooks(@ModelAttribute  PageRequest pageReqDto, HttpServletRequest request){
+>>>>>>> 488d2200b9d0ba8e7a1a626ac1013921b3618e77
         return ResultUtils.success(bookInfoService.listAuthorBooks(pageReqDto,request));
     }
 
