@@ -1,9 +1,8 @@
 package com.deng.springbootinit.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.deng.springbootinit.model.dto.PageReqDto;
-import com.deng.springbootinit.model.dto.PageRespDto;
-import com.deng.springbootinit.model.dto.book.BookInfoRespDto;
+import com.deng.springbootinit.common.PageRequest;
+import com.deng.springbootinit.model.dto.chapter.ChapterAddReqDto;
 import com.deng.springbootinit.model.dto.home.book.BookAddReqDto;
 import com.deng.springbootinit.model.entity.BookInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -30,5 +29,13 @@ public interface BookInfoService extends IService<BookInfo> {
      * @param pageReqDto
      * @return
      */
-    Page<BookInfo> listAuthorBooks(PageReqDto pageReqDto, HttpServletRequest request);
+    Page<BookInfo> listAuthorBooks(PageRequest pageReqDto, HttpServletRequest request);
+
+
+    /**
+     * 小说章节信息保存
+     * @param chapterAddReqDto
+     * @return
+     */
+    Boolean saveBookChapter(ChapterAddReqDto chapterAddReqDto,HttpServletRequest request);
 }

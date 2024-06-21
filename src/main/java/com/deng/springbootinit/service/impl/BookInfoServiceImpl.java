@@ -4,24 +4,30 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.deng.springbootinit.common.ErrorCode;
+import com.deng.springbootinit.common.PageRequest;
 import com.deng.springbootinit.exception.BusinessException;
 import com.deng.springbootinit.mapper.AuthorInfoMapper;
 import com.deng.springbootinit.mapper.BookInfoMapper;
 import com.deng.springbootinit.model.dto.PageReqDto;
-import com.deng.springbootinit.model.dto.PageRespDto;
-import com.deng.springbootinit.model.dto.book.BookInfoRespDto;
+import com.deng.springbootinit.model.dto.chapter.ChapterAddReqDto;
 import com.deng.springbootinit.model.dto.home.book.BookAddReqDto;
 import com.deng.springbootinit.model.entity.AuthorInfo;
 import com.deng.springbootinit.model.entity.BookInfo;
+import com.deng.springbootinit.model.entity.UserInfo;
 import com.deng.springbootinit.service.AuthorInfoService;
 import com.deng.springbootinit.service.BookInfoService;
 import com.deng.springbootinit.service.UserService;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.stream.Collectors;
+
+import java.util.Objects;
+
+import static com.deng.springbootinit.constant.UserConstant.USER_LOGIN_STATE;
 
 /**
 * @author a9090
@@ -89,18 +95,45 @@ public class BookInfoServiceImpl extends ServiceImpl<BookInfoMapper, BookInfo>
      * @return
      */
     @Override
-    public Page<BookInfo> listAuthorBooks( PageReqDto pageReqDto,
-                                                       HttpServletRequest request) {
+    public Page<BookInfo> listAuthorBooks(PageRequest pageReqDto,
+                                          HttpServletRequest request) {
         AuthorInfo currentAuthor = authorInfoService.getCurrentAuthor(request);
         if(null == currentAuthor){
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR,"请登录");
         }
-        int pageNum = pageReqDto.getPageNum();
-        int pageSize = pageReqDto.getPageSize();
+        long current = pageReqDto.getCurrent();
+        long pageSize = pageReqDto.getPageSize();
         QueryWrapper<BookInfo> queryWrapper = new QueryWrapper<>();
         QueryWrapper<BookInfo> authorId = queryWrapper.eq("authorId", currentAuthor.getId());
-        Page<BookInfo> page = this.page(new Page<>(pageNum, pageSize), authorId);
+        Page<BookInfo> page = this.page(new Page<>(current, pageSize), authorId);
         return page;
+    }
+
+    /**
+     * 小说章节信息保存
+     * TODO 发mq
+     * 存储两个表，小说章节，小说章节内容表
+     * @param chapterAddReqDto
+     * @return
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean saveBookChapter(ChapterAddReqDto chapterAddReqDto,HttpServletRequest request) {
+        //校验作品是否属于当前作家
+        BookInfo bookInfo = bookInfoMapper.selectById(chapterAddReqDto.getBookId());
+        UserInfo attribute = (UserInfo) request.getSession().getAttribute(USER_LOGIN_STATE);
+        if(!Objects.equals(bookInfo.getAuthorId(),attribute.getId())){
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR,"未登录");
+        }
+
+        //获取最新章节
+
+        //保存到小说章节表
+
+        //保存到小说内容表
+
+        //更新小说最新章节和字数信息
+        return null;
     }
 }
 
