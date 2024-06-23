@@ -18,7 +18,7 @@ public class PageReqDto<T> {
     private int pageSize = 10;
 
     /**
-     * 是否查询所有，默认不不查所有 为true时 无效
+     * 是否查询所有，默认不查所有 为true时 无效
      */
     private boolean fetchAll = false;
 }

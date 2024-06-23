@@ -14,16 +14,12 @@ public class BookAddReqDto {
     @NotNull
     private Integer workDirection;
 
-    /**
-     * 类别ID
-     */
-    @NotNull
-    private Long categoryId;
 
     /**
      * 类别名
      */
     @NotBlank
+    //TODO 新增类别表限制自定义类别名
     private String categoryName;
 
     /**
@@ -44,6 +40,7 @@ public class BookAddReqDto {
      */
     @NotBlank
     private String bookDesc;
+
 
     /**
      * 是否收费;1-收费 0-免费

@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -71,9 +73,10 @@ public class BookInfo implements Serializable {
 
     /**
      * 评分;总分:10 ，真实评分 = score/10
+     * 初始值为 11，代表未开始评分
      */
     @TableField(value = "score")
-    private Integer score;
+    private Integer score = 11;
 
     /**
      * 书籍状态;0-连载中 1-已完结

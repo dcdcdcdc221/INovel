@@ -40,11 +40,20 @@ public class AuthorInfoServiceImpl extends ServiceImpl<AuthorInfoMapper, AuthorI
     private UserService userService;
 
 
+    /**
+     * 注册为作家
+     * @param userAccount
+     * @param authorRegisterRequest
+     * @return
+     */
     @Override
     public long register(String userAccount,AuthorRegisterRequest authorRegisterRequest) {
         //查询是否注册过
         if(isRegister(userAccount)){
             throw new BusinessException(ErrorCode.PARAMS_ERROR,"你已经是作者了");
+        }
+        if(authorRegisterRequest == null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"请输入必要信息");
         }
         //插入
         AuthorInfo authorInfo = new AuthorInfo();

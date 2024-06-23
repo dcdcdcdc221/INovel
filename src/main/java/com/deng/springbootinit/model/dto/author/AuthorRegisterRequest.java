@@ -36,7 +36,7 @@ public class AuthorRegisterRequest implements Serializable {
     @NotNull(message = "作品方向不能为空！")
     @Min(0)
     @Max(1)
-    private Integer workDirection;
+        private Integer workDirection;
 
 
 }
