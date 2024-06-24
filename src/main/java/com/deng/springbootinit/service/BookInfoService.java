@@ -2,11 +2,7 @@ package com.deng.springbootinit.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.deng.springbootinit.common.PageRequest;
-<<<<<<< HEAD
 import com.deng.springbootinit.model.dto.chapter.ChapterAddReqDto;
-=======
-import com.deng.springbootinit.model.dto.PageReqDto;
->>>>>>> 488d2200b9d0ba8e7a1a626ac1013921b3618e77
 import com.deng.springbootinit.model.dto.home.book.BookAddReqDto;
 import com.deng.springbootinit.model.entity.BookInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
