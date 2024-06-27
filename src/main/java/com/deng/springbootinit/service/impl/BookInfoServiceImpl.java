@@ -7,12 +7,12 @@ import com.deng.springbootinit.common.ErrorCode;
 import com.deng.springbootinit.common.PageRequest;
 import com.deng.springbootinit.exception.BusinessException;
 import com.deng.springbootinit.mapper.AuthorInfoMapper;
+import com.deng.springbootinit.mapper.BookChapterMapper;
+import com.deng.springbootinit.mapper.BookContentMapper;
 import com.deng.springbootinit.mapper.BookInfoMapper;
 import com.deng.springbootinit.model.dto.chapter.ChapterAddReqDto;
 import com.deng.springbootinit.model.dto.home.book.BookAddReqDto;
-import com.deng.springbootinit.model.entity.AuthorInfo;
-import com.deng.springbootinit.model.entity.BookInfo;
-import com.deng.springbootinit.model.entity.UserInfo;
+import com.deng.springbootinit.model.entity.*;
 import com.deng.springbootinit.service.AuthorInfoService;
 import com.deng.springbootinit.service.BookInfoService;
 import com.deng.springbootinit.service.UserService;
@@ -47,6 +47,13 @@ public class BookInfoServiceImpl extends ServiceImpl<BookInfoMapper, BookInfo>
 
     @Resource
     private AuthorInfoMapper authorInfoMapper;
+
+    @Resource
+    private BookChapterMapper bookChapterMapper;
+
+
+    @Resource
+    private BookContentMapper bookContentMapper;
 
     /**
      * 存储小说
@@ -124,15 +131,36 @@ public class BookInfoServiceImpl extends ServiceImpl<BookInfoMapper, BookInfo>
         if(!Objects.equals(bookInfo.getAuthorId(),attribute.getId())){
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR,"未登录");
         }
-
         //获取最新章节
-
+        int chapterNum = 0;
+        QueryWrapper<BookChapter> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("bookId",chapterAddReqDto.getBookId())
+                .orderByAsc("chapterNum");
+        BookChapter bookChapter = bookChapterMapper.selectOne(queryWrapper);
+        if(Objects.nonNull(bookChapter)){
+            //最新章节加1（最新章节）
+            chapterNum = bookChapter.getChapterNum() + 1;
+        }
         //保存到小说章节表
-
+        BookChapter newBookChapter = new BookChapter();
+        BeanUtils.copyProperties(chapterAddReqDto,newBookChapter);
+        newBookChapter.setChapterNum(chapterNum);
+        bookChapterMapper.insert(newBookChapter);
         //保存到小说内容表
-
+        BookContent bookContent = new BookContent();
+        bookContent.setChapterId(newBookChapter.getId());
+        bookContent.setContent(chapterAddReqDto.getChapterContent());
+        bookContentMapper.insert(bookContent);
         //更新小说最新章节和字数信息
-        return null;
+        BookInfo newBookInfo = new BookInfo();
+        newBookInfo.setId(chapterAddReqDto.getBookId());
+        newBookInfo.setLastChapterId(newBookChapter.getId());
+        newBookInfo.setLastChapterName(newBookChapter.getChapterName());
+        //更新字数
+        newBookInfo.setWordCount(bookInfo.getWordCount() + newBookChapter.getWordCount());
+        bookInfoMapper.updateById(newBookInfo);
+        //TODO 清除小说信息缓存+rocketmq发给es消费
+        return true;
     }
 }
 
