@@ -122,11 +122,19 @@
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
         </dependency>
+<<<<<<< HEAD
         <!--   rockermq     -->
         <dependency>
             <groupId>org.apache.rocketmq</groupId>
             <artifactId>rocketmq-spring-boot-starter</artifactId>
             <version>2.2.2</version>
+=======
+<!--    rocketmq相关    -->
+        <dependency>
+            <groupId>org.apache.rocketmq</groupId>
+            <artifactId>rocketmq-spring-boot-starter</artifactId>
+            <version>2.3.0</version>
+>>>>>>> 3c03219e075e6b54e0c4da36ff8134b66f5139b3
         </dependency>
     </dependencies>
 
