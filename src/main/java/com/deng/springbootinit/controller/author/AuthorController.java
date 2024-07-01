@@ -88,16 +88,15 @@ public class AuthorController {
 
     /**
      * 小说章节发布
-     * @param bookId
+     * @param
      * @param dto
      * @return
      */
     @ApiOperation("小说信息保存")
-    @PostMapping("/book/chapter/{bookId}")
-    public BaseResponse<Boolean> publishBookChapter(@PathVariable Long bookId,
+    @PostMapping("/book/chapter")
+    public BaseResponse<Boolean> publishBookChapter(
                                                     @Valid @RequestBody ChapterAddReqDto dto,
                                                     HttpServletRequest request){
-        dto.setBookId(bookId);
         return ResultUtils.success(bookInfoService.saveBookChapter(dto,request));
     }
 }

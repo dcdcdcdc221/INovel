@@ -17,6 +17,7 @@ import com.deng.springbootinit.service.AuthorInfoService;
 import com.deng.springbootinit.service.BookInfoService;
 import com.deng.springbootinit.service.UserService;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +35,7 @@ import static com.deng.springbootinit.constant.UserConstant.USER_LOGIN_STATE;
 * @createDate 2024-05-24 16:14:47
 */
 @Service
+@Slf4j
 public class BookInfoServiceImpl extends ServiceImpl<BookInfoMapper, BookInfo>
     implements BookInfoService{
     @Resource
@@ -54,6 +56,7 @@ public class BookInfoServiceImpl extends ServiceImpl<BookInfoMapper, BookInfo>
 
     @Resource
     private BookContentMapper bookContentMapper;
+
 
     /**
      * 存储小说
@@ -126,16 +129,26 @@ public class BookInfoServiceImpl extends ServiceImpl<BookInfoMapper, BookInfo>
     @Transactional(rollbackFor = Exception.class)
     public Boolean saveBookChapter(ChapterAddReqDto chapterAddReqDto,HttpServletRequest request) {
         //校验作品是否属于当前作家
+        System.out.println("我们的值"+chapterAddReqDto);
+        System.out.println("是否登录"+chapterAddReqDto.getBookId());
         BookInfo bookInfo = bookInfoMapper.selectById(chapterAddReqDto.getBookId());
         UserInfo attribute = (UserInfo) request.getSession().getAttribute(USER_LOGIN_STATE);
-        if(!Objects.equals(bookInfo.getAuthorId(),attribute.getId())){
+        Long id = authorInfoService.getCurrentAuthor(request).getId();
+        System.out.println("bookinfo"+bookInfo);
+        if(Objects.isNull(bookInfo)){
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR,"未登录");
+        }
+        System.out.println("是否登录"+bookInfo.getAuthorId());
+        System.out.println("是否登录"+attribute.getId());
+        if(!Objects.equals(bookInfo.getAuthorId(),id)){
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR,"未登录");
         }
         //获取最新章节
         int chapterNum = 0;
         QueryWrapper<BookChapter> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("bookId",chapterAddReqDto.getBookId())
-                .orderByAsc("chapterNum");
+                .orderByAsc("chapterNum")
+                .last("limit 1");
         BookChapter bookChapter = bookChapterMapper.selectOne(queryWrapper);
         if(Objects.nonNull(bookChapter)){
             //最新章节加1（最新章节）
@@ -145,6 +158,7 @@ public class BookInfoServiceImpl extends ServiceImpl<BookInfoMapper, BookInfo>
         BookChapter newBookChapter = new BookChapter();
         BeanUtils.copyProperties(chapterAddReqDto,newBookChapter);
         newBookChapter.setChapterNum(chapterNum);
+        newBookChapter.setWordCount(chapterAddReqDto.getChapterContent().length());
         bookChapterMapper.insert(newBookChapter);
         //保存到小说内容表
         BookContent bookContent = new BookContent();
