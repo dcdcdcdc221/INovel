@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.deng.springbootinit.common.ErrorCode;
 import com.deng.springbootinit.common.PageRequest;
 import com.deng.springbootinit.exception.BusinessException;
+import com.deng.springbootinit.exception.ThrowUtils;
 import com.deng.springbootinit.mapper.AuthorInfoMapper;
 import com.deng.springbootinit.mapper.BookChapterMapper;
 import com.deng.springbootinit.mapper.BookContentMapper;
@@ -14,9 +15,13 @@ import com.deng.springbootinit.model.dto.chapter.ChapterAddReqDto;
 import com.deng.springbootinit.model.dto.home.book.BookAddReqDto;
 import com.deng.springbootinit.model.entity.*;
 import com.deng.springbootinit.service.AuthorInfoService;
+import com.deng.springbootinit.service.BookChapterService;
 import com.deng.springbootinit.service.BookInfoService;
 import com.deng.springbootinit.service.UserService;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.util.StringUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +39,7 @@ import static com.deng.springbootinit.constant.UserConstant.USER_LOGIN_STATE;
 * @createDate 2024-05-24 16:14:47
 */
 @Service
+@Slf4j
 public class BookInfoServiceImpl extends ServiceImpl<BookInfoMapper, BookInfo>
     implements BookInfoService{
     @Resource
@@ -55,6 +61,8 @@ public class BookInfoServiceImpl extends ServiceImpl<BookInfoMapper, BookInfo>
     @Resource
     private BookContentMapper bookContentMapper;
 
+    @Resource
+    private BookChapterService bookChapterService;
     /**
      * 存储小说
      * @param bookAddReqDto
@@ -126,25 +134,41 @@ public class BookInfoServiceImpl extends ServiceImpl<BookInfoMapper, BookInfo>
     @Transactional(rollbackFor = Exception.class)
     public Boolean saveBookChapter(ChapterAddReqDto chapterAddReqDto,HttpServletRequest request) {
         //校验作品是否属于当前作家
+        System.out.println("我们的值"+chapterAddReqDto);
+        System.out.println("是否登录"+chapterAddReqDto.getBookId());
         BookInfo bookInfo = bookInfoMapper.selectById(chapterAddReqDto.getBookId());
+        long bookId = Long.parseLong(chapterAddReqDto.getBookId());
+        AuthorInfo currentAuthor = authorInfoService.getCurrentAuthor(request);
+        if(!Objects.equals(bookInfo.getAuthorId(),currentAuthor.getId())) {
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "未登录");
+        }
         UserInfo attribute = (UserInfo) request.getSession().getAttribute(USER_LOGIN_STATE);
-        if(!Objects.equals(bookInfo.getAuthorId(),attribute.getId())){
-            throw new BusinessException(ErrorCode.NO_AUTH_ERROR,"未登录");
+        Long id = authorInfoService.getCurrentAuthor(request).getId();
+        System.out.println("bookinfo"+bookInfo);
+        if(!Objects.equals(bookInfo.getAuthorId(),id)){
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR,"未登录或不是当前书籍作者");
         }
         //获取最新章节
         int chapterNum = 0;
         QueryWrapper<BookChapter> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("bookId",chapterAddReqDto.getBookId())
-                .orderByAsc("chapterNum");
+        //限制条数为1条
+        queryWrapper.eq("bookId",bookId)
+                .orderByDesc("chapterNum")
+                .last("limit 1");
         BookChapter bookChapter = bookChapterMapper.selectOne(queryWrapper);
         if(Objects.nonNull(bookChapter)){
             //最新章节加1（最新章节）
             chapterNum = bookChapter.getChapterNum() + 1;
+            log.info("Book chapter(添加前的章节)" + bookChapter.getChapterNum());
+            log.info("chapterNum(添加后的章节)" + chapterNum);
         }
         //保存到小说章节表
         BookChapter newBookChapter = new BookChapter();
         BeanUtils.copyProperties(chapterAddReqDto,newBookChapter);
+        newBookChapter.setBookId(bookId);
         newBookChapter.setChapterNum(chapterNum);
+        newBookChapter.setWordCount(chapterAddReqDto.getChapterContent().length());
+        newBookChapter.setBookId(bookId);
         bookChapterMapper.insert(newBookChapter);
         //保存到小说内容表
         BookContent bookContent = new BookContent();
@@ -153,7 +177,7 @@ public class BookInfoServiceImpl extends ServiceImpl<BookInfoMapper, BookInfo>
         bookContentMapper.insert(bookContent);
         //更新小说最新章节和字数信息
         BookInfo newBookInfo = new BookInfo();
-        newBookInfo.setId(chapterAddReqDto.getBookId());
+        newBookInfo.setId(bookId);
         newBookInfo.setLastChapterId(newBookChapter.getId());
         newBookInfo.setLastChapterName(newBookChapter.getChapterName());
         //更新字数
@@ -161,9 +185,8 @@ public class BookInfoServiceImpl extends ServiceImpl<BookInfoMapper, BookInfo>
         bookInfoMapper.updateById(newBookInfo);
         //TODO 清除小说信息缓存+rocketmq发给es消费
         return true;
+        }
     }
-}
-
 
 
 

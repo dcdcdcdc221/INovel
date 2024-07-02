@@ -16,7 +16,7 @@ public class ChapterAddReqDto implements Serializable {
      * 小说ID
      */
     @NotNull
-    private Long bookId;
+    private String bookId;
 
     /**
      * 章节名

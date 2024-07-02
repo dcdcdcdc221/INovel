@@ -7,11 +7,15 @@ import com.deng.springbootinit.common.ResultUtils;
 import com.deng.springbootinit.model.dto.author.AuthorRegisterRequest;
 import com.deng.springbootinit.model.dto.chapter.ChapterAddReqDto;
 import com.deng.springbootinit.model.dto.home.book.BookAddReqDto;
+import com.deng.springbootinit.model.entity.BookChapter;
 import com.deng.springbootinit.model.entity.BookInfo;
 import com.deng.springbootinit.model.entity.UserInfo;
 import com.deng.springbootinit.service.AuthorInfoService;
+import com.deng.springbootinit.service.BookChapterService;
 import com.deng.springbootinit.service.BookInfoService;
 import com.deng.springbootinit.service.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,6 +34,12 @@ public class AuthorController {
 
     @Resource
     private BookInfoService bookInfoService;
+
+    @Resource
+    private BookChapterService bookChapterService;
+
+    @Resource
+    private ObjectMapper objectMapper;
 
     /**
      * 用户注册
@@ -68,8 +78,10 @@ public class AuthorController {
 
      * @return
      */
+    @ResponseBody
     @GetMapping("/book/list")
-    public BaseResponse<Page<BookInfo>> listBooks(@ModelAttribute  PageRequest pageReqDto, HttpServletRequest request){
+    public BaseResponse<Page<BookInfo>> listBooks(@ModelAttribute  PageRequest pageReqDto, HttpServletRequest request) throws JsonProcessingException {
+        System.out.println("输出的结果" + objectMapper.writeValueAsString(bookInfoService.listAuthorBooks(pageReqDto,request)));
         return ResultUtils.success(bookInfoService.listAuthorBooks(pageReqDto,request));
     }
 
@@ -88,16 +100,24 @@ public class AuthorController {
 
     /**
      * 小说章节发布
-     * @param bookId
+     * @param
      * @param dto
      * @return
      */
     @ApiOperation("小说信息保存")
-    @PostMapping("/book/chapter/{bookId}")
-    public BaseResponse<Boolean> publishBookChapter(@PathVariable Long bookId,
+    @PostMapping("/book/chapter")
+    public BaseResponse<Boolean> publishBookChapter(
                                                     @Valid @RequestBody ChapterAddReqDto dto,
                                                     HttpServletRequest request){
-        dto.setBookId(bookId);
         return ResultUtils.success(bookInfoService.saveBookChapter(dto,request));
+    }
+
+    @ApiOperation("小说章节发布列表查询接口")
+    @GetMapping("/book/chapters/{bookId}")
+    public BaseResponse<Page<BookChapter>> listBookChapter(@PathVariable String bookId,
+                                                           @ModelAttribute PageRequest pageRequest,
+                                                           HttpServletRequest request
+    ){
+        return ResultUtils.success(bookChapterService.listBookChapters(bookId,pageRequest,request));
     }
 }
