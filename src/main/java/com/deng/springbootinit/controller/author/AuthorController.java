@@ -12,6 +12,8 @@ import com.deng.springbootinit.model.entity.UserInfo;
 import com.deng.springbootinit.service.AuthorInfoService;
 import com.deng.springbootinit.service.BookInfoService;
 import com.deng.springbootinit.service.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,6 +32,9 @@ public class AuthorController {
 
     @Resource
     private BookInfoService bookInfoService;
+
+    @Resource
+    private ObjectMapper objectMapper;
 
     /**
      * 用户注册
@@ -68,8 +73,10 @@ public class AuthorController {
 
      * @return
      */
+    @ResponseBody
     @GetMapping("/book/list")
-    public BaseResponse<Page<BookInfo>> listBooks(@ModelAttribute  PageRequest pageReqDto, HttpServletRequest request){
+    public BaseResponse<Page<BookInfo>> listBooks(@ModelAttribute  PageRequest pageReqDto, HttpServletRequest request) throws JsonProcessingException {
+        System.out.println("输出的结果" + objectMapper.writeValueAsString(bookInfoService.listAuthorBooks(pageReqDto,request)));
         return ResultUtils.success(bookInfoService.listAuthorBooks(pageReqDto,request));
     }
 
