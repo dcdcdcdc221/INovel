@@ -7,6 +7,7 @@ import com.deng.springbootinit.common.ErrorCode;
 import com.deng.springbootinit.common.PageRequest;
 import com.deng.springbootinit.exception.ThrowUtils;
 import com.deng.springbootinit.mapper.BookInfoMapper;
+import com.deng.springbootinit.model.dto.chapter.ChapterUpdateReqDto;
 import com.deng.springbootinit.model.entity.AuthorInfo;
 import com.deng.springbootinit.model.entity.BookChapter;
 import com.deng.springbootinit.model.entity.BookInfo;
@@ -15,6 +16,7 @@ import com.deng.springbootinit.service.BookChapterService;
 import com.deng.springbootinit.mapper.BookChapterMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -59,7 +61,14 @@ public class BookChapterServiceImpl extends ServiceImpl<BookChapterMapper, BookC
                 .orderByDesc("chapterNum");
         log.info("章节查询执行");
         Page<BookChapter> page = this.page(new Page<>(current, pageSize), bookId1);
+        log.info("pageList" + page.getRecords());
         return page;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean updateBookChapter(Long chapterId, ChapterUpdateReqDto chapterUpdateReqDto, HttpServletRequest request) {
+        return null;
     }
 }
 

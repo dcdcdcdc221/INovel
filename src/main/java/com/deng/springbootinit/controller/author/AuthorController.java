@@ -1,11 +1,14 @@
 package com.deng.springbootinit.controller.author;
 
+import co.elastic.clients.elasticsearch.nodes.Http;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.deng.springbootinit.common.BaseResponse;
 import com.deng.springbootinit.common.PageRequest;
 import com.deng.springbootinit.common.ResultUtils;
 import com.deng.springbootinit.model.dto.author.AuthorRegisterRequest;
 import com.deng.springbootinit.model.dto.chapter.ChapterAddReqDto;
+import com.deng.springbootinit.model.dto.chapter.ChapterContentRespDto;
+import com.deng.springbootinit.model.dto.chapter.ChapterUpdateReqDto;
 import com.deng.springbootinit.model.dto.home.book.BookAddReqDto;
 import com.deng.springbootinit.model.entity.BookChapter;
 import com.deng.springbootinit.model.entity.BookInfo;
@@ -112,6 +115,35 @@ public class AuthorController {
         return ResultUtils.success(bookInfoService.saveBookChapter(dto,request));
     }
 
+    /**
+     * 小说章节查询接口
+     * @param chapterId
+     * @param request
+     * @return
+     */
+    @ApiOperation("小说章节查询")
+    @GetMapping("/book/chapter/{chapterId}")
+    public BaseResponse<ChapterContentRespDto> getBookChapter(
+            @PathVariable("chapterId") Long chapterId, HttpServletRequest request) {
+        return ResultUtils.success(bookInfoService.getBookChapter(chapterId,request));
+    }
+
+    @ApiOperation("小说章节更新")
+    @PutMapping("/book/chapter/{chapterId}")
+    public BaseResponse<Boolean> updateBookChapter(@PathVariable("chapterId") Long chapterId,
+                                                   ChapterUpdateReqDto chapterUpdateReqDto,
+                                                   HttpServletRequest request){
+        return ResultUtils.success(bookChapterService.updateBookChapter(chapterId, chapterUpdateReqDto,request));
+    }
+
+
+    /**
+     * 小说章节发布列表查询
+     * @param bookId
+     * @param pageRequest
+     * @param request
+     * @return
+     */
     @ApiOperation("小说章节发布列表查询接口")
     @GetMapping("/book/chapters/{bookId}")
     public BaseResponse<Page<BookChapter>> listBookChapter(@PathVariable String bookId,

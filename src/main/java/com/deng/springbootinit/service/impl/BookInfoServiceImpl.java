@@ -3,6 +3,7 @@ package com.deng.springbootinit.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.deng.springbootinit.common.BaseResponse;
 import com.deng.springbootinit.common.ErrorCode;
 import com.deng.springbootinit.common.PageRequest;
 import com.deng.springbootinit.exception.BusinessException;
@@ -12,6 +13,7 @@ import com.deng.springbootinit.mapper.BookChapterMapper;
 import com.deng.springbootinit.mapper.BookContentMapper;
 import com.deng.springbootinit.mapper.BookInfoMapper;
 import com.deng.springbootinit.model.dto.chapter.ChapterAddReqDto;
+import com.deng.springbootinit.model.dto.chapter.ChapterContentRespDto;
 import com.deng.springbootinit.model.dto.home.book.BookAddReqDto;
 import com.deng.springbootinit.model.entity.*;
 import com.deng.springbootinit.service.AuthorInfoService;
@@ -23,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.util.StringUtil;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,6 +66,7 @@ public class BookInfoServiceImpl extends ServiceImpl<BookInfoMapper, BookInfo>
 
     @Resource
     private BookChapterService bookChapterService;
+
     /**
      * 存储小说
      * @param bookAddReqDto
@@ -186,7 +190,38 @@ public class BookInfoServiceImpl extends ServiceImpl<BookInfoMapper, BookInfo>
         //TODO 清除小说信息缓存+rocketmq发给es消费
         return true;
         }
+
+    /**
+     * 小说章节信息查询
+     * @param chapterId
+     * @param request
+     * @return
+     */
+    @Override
+    public ChapterContentRespDto getBookChapter(Long chapterId,HttpServletRequest request) {
+        //获取当前作者
+        AuthorInfo currentAuthor = authorInfoService.getCurrentAuthor(request);
+        //当前章节是否存在
+        //判断当前书籍是否属于当前作者
+        BookChapter bookChapter = bookChapterMapper.selectById(chapterId);
+        ThrowUtils.throwIf(Objects.isNull(bookChapter),ErrorCode.FORBIDDEN_ERROR,"当前章节或书籍不存在");
+        Long bookId = bookChapter.getBookId();
+        BookInfo bookInfo = bookInfoMapper.selectById(bookId);
+        ThrowUtils.throwIf(Objects.isNull(bookInfo),
+                ErrorCode.NO_AUTH_ERROR,"当前书籍异常，请联系管理员");
+        log.info("获取的AuthorId" + bookInfo.getAuthorId());
+        log.info("当前的AuthorId" + currentAuthor.getId());
+        ThrowUtils.throwIf(!Objects.equals(bookInfo.getAuthorId(), currentAuthor.getId()),
+                ErrorCode.NO_AUTH_ERROR,"非当前书籍作者，请确认");
+        //查询章节内容
+        QueryWrapper<BookContent> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<BookContent> eq = queryWrapper.eq("chapterId", chapterId);
+        BookContent bookContent = bookContentMapper.selectOne(eq);
+        ChapterContentRespDto chapterContentRespDto = new ChapterContentRespDto();
+        BeanUtils.copyProperties(bookContent,chapterContentRespDto);
+        return chapterContentRespDto;
     }
+}
 
 
 

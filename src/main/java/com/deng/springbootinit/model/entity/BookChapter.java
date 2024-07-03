@@ -6,6 +6,10 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 /**
@@ -13,11 +17,13 @@ import lombok.Data;
  * @TableName book_chapter
  */
 @TableName(value ="book_chapter")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Data
 public class BookChapter implements Serializable {
     /**
      * 
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 

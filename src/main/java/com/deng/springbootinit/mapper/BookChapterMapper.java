@@ -1,7 +1,9 @@
 package com.deng.springbootinit.mapper;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.deng.springbootinit.model.entity.BookChapter;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.deng.springbootinit.model.entity.BookContent;
 
 /**
 * @author a9090

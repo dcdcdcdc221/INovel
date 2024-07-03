@@ -2,6 +2,7 @@ package com.deng.springbootinit.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.deng.springbootinit.common.PageRequest;
+import com.deng.springbootinit.model.dto.chapter.ChapterUpdateReqDto;
 import com.deng.springbootinit.model.entity.BookChapter;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -21,4 +22,13 @@ public interface BookChapterService extends IService<BookChapter> {
      * @return
      */
     Page<BookChapter> listBookChapters(String bookId, PageRequest pageRequest, HttpServletRequest request);
+
+    /**
+     * 更新小说章节内容
+     * @param chapterId
+     * @param chapterUpdateReqDto
+     * @param request
+     * @return
+     */
+    Boolean updateBookChapter(Long chapterId, ChapterUpdateReqDto chapterUpdateReqDto, HttpServletRequest request);
 }
