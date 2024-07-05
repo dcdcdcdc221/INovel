@@ -61,7 +61,7 @@ public class BookChapterServiceImpl extends ServiceImpl<BookChapterMapper, BookC
                 .orderByDesc("chapterNum");
         log.info("章节查询执行");
         Page<BookChapter> page = this.page(new Page<>(current, pageSize), bookId1);
-        log.info("pageList" + page.getRecords());
+        log.info("作者分页查询pageList" + page.getRecords());
         return page;
     }
 

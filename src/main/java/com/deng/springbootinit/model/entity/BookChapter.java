@@ -23,7 +23,7 @@ public class BookChapter implements Serializable {
     /**
      * 
      */
-    @JsonSerialize(using = ToStringSerializer.class)
+//    @JsonSerialize(using = ToStringSerializer.class)
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 

@@ -51,11 +51,6 @@ public class BookInfoServiceImpl extends ServiceImpl<BookInfoMapper, BookInfo>
     @Resource
     private AuthorInfoService authorInfoService;
 
-    @Resource
-    private UserService userService;
-
-    @Resource
-    private AuthorInfoMapper authorInfoMapper;
 
     @Resource
     private BookChapterMapper bookChapterMapper;
@@ -64,8 +59,6 @@ public class BookInfoServiceImpl extends ServiceImpl<BookInfoMapper, BookInfo>
     @Resource
     private BookContentMapper bookContentMapper;
 
-    @Resource
-    private BookChapterService bookChapterService;
 
     /**
      * 存储小说
@@ -141,7 +134,8 @@ public class BookInfoServiceImpl extends ServiceImpl<BookInfoMapper, BookInfo>
         System.out.println("我们的值"+chapterAddReqDto);
         System.out.println("是否登录"+chapterAddReqDto.getBookId());
         BookInfo bookInfo = bookInfoMapper.selectById(chapterAddReqDto.getBookId());
-        long bookId = Long.parseLong(chapterAddReqDto.getBookId());
+//        long bookId = Long.parseLong(chapterAddReqDto.getBookId());
+        Long bookId = chapterAddReqDto.getBookId();
         AuthorInfo currentAuthor = authorInfoService.getCurrentAuthor(request);
         if(!Objects.equals(bookInfo.getAuthorId(),currentAuthor.getId())) {
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "未登录");
@@ -213,13 +207,16 @@ public class BookInfoServiceImpl extends ServiceImpl<BookInfoMapper, BookInfo>
         log.info("当前的AuthorId" + currentAuthor.getId());
         ThrowUtils.throwIf(!Objects.equals(bookInfo.getAuthorId(), currentAuthor.getId()),
                 ErrorCode.NO_AUTH_ERROR,"非当前书籍作者，请确认");
+        //查询章节信息
         //查询章节内容
         QueryWrapper<BookContent> queryWrapper = new QueryWrapper<>();
         QueryWrapper<BookContent> eq = queryWrapper.eq("chapterId", chapterId);
         BookContent bookContent = bookContentMapper.selectOne(eq);
-        ChapterContentRespDto chapterContentRespDto = new ChapterContentRespDto();
-        BeanUtils.copyProperties(bookContent,chapterContentRespDto);
-        return chapterContentRespDto;
+        return ChapterContentRespDto.builder().chapterContent(bookContent.getContent())
+                .isVip(bookChapter.getIsVip())
+                .chapterName(bookChapter.getChapterName())
+                .chapterNum(bookChapter.getChapterNum())
+                .build();
     }
 }
 
