@@ -6,15 +6,18 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.deng.springbootinit.common.ErrorCode;
 import com.deng.springbootinit.common.PageRequest;
 import com.deng.springbootinit.exception.ThrowUtils;
+import com.deng.springbootinit.mapper.BookContentMapper;
 import com.deng.springbootinit.mapper.BookInfoMapper;
 import com.deng.springbootinit.model.dto.chapter.ChapterUpdateReqDto;
 import com.deng.springbootinit.model.entity.AuthorInfo;
 import com.deng.springbootinit.model.entity.BookChapter;
+import com.deng.springbootinit.model.entity.BookContent;
 import com.deng.springbootinit.model.entity.BookInfo;
 import com.deng.springbootinit.service.AuthorInfoService;
 import com.deng.springbootinit.service.BookChapterService;
 import com.deng.springbootinit.mapper.BookChapterMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +40,12 @@ public class BookChapterServiceImpl extends ServiceImpl<BookChapterMapper, BookC
 
     @Resource
     private BookInfoMapper bookInfoMapper;
+
+    @Resource
+    private BookChapterMapper bookChapterMapper;
+
+    @Resource
+    private BookContentMapper bookContentMapper;
 
     @Override
     public Page<BookChapter> listBookChapters(String bookId, PageRequest pageRequest, HttpServletRequest request) {
@@ -68,7 +77,43 @@ public class BookChapterServiceImpl extends ServiceImpl<BookChapterMapper, BookC
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean updateBookChapter(Long chapterId, ChapterUpdateReqDto chapterUpdateReqDto, HttpServletRequest request) {
-        return null;
+        log.info("前端传的值" + chapterUpdateReqDto.toString());
+        //校验作品是否属于当前作家
+        BookChapter bookChapter = bookChapterMapper.selectById(chapterId);
+        BookInfo bookInfo = bookInfoMapper.selectById(bookChapter.getBookId());
+        AuthorInfo currentAuthor = authorInfoService.getCurrentAuthor(request);
+        ThrowUtils.throwIf(Objects.isNull(bookInfo)
+                ,ErrorCode.PARAMS_ERROR,"该书籍不存在或异常");
+        ThrowUtils.throwIf(!Objects.equals(bookInfo.getAuthorId(),currentAuthor.getId())
+                ,ErrorCode.NO_AUTH_ERROR,"非该书籍作者，请确认");
+        //保存到小说章节表
+        BookChapter newBookChapter = new BookChapter();
+        //忽略章节内容
+        BeanUtils.copyProperties(chapterUpdateReqDto,newBookChapter,chapterUpdateReqDto.getChapterContent());
+        newBookChapter.setWordCount(chapterUpdateReqDto.getChapterContent().length());
+        //查看语句
+        log.info("bookChapterMapper更新");
+        bookChapterMapper.updateById(newBookChapter);
+        //更新章节内容
+        BookContent bookContent = new BookContent();
+        bookContent.setContent(chapterUpdateReqDto.getChapterContent());
+        QueryWrapper<BookContent> bookContentQueryWrapper = new QueryWrapper<>();
+        bookContentQueryWrapper.eq("chapterId", chapterId);
+        bookContentMapper.update(bookContent, bookContentQueryWrapper);
+        //更新小说信息
+        BookInfo newBookInfo = new BookInfo();
+        newBookInfo.setId(bookChapter.getId());
+        //获取当前字数
+        newBookInfo.setWordCount(
+                bookInfo.getWordCount() - bookChapter.getWordCount() + chapterUpdateReqDto.getChapterContent().length()
+        );
+        if(Objects.equals(bookInfo.getLastChapterId(),chapterId)){
+            newBookInfo.setLastChapterName(chapterUpdateReqDto.getChapterName());
+        }
+        log.info("bookInfoMapper更新");
+        //此处不会更新update的值
+        bookInfoMapper.updateById(newBookInfo);
+        return true;
     }
 }
 

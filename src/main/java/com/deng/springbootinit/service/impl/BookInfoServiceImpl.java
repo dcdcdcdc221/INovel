@@ -140,7 +140,7 @@ public class BookInfoServiceImpl extends ServiceImpl<BookInfoMapper, BookInfo>
         if(!Objects.equals(bookInfo.getAuthorId(),currentAuthor.getId())) {
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "未登录");
         }
-        UserInfo attribute = (UserInfo) request.getSession().getAttribute(USER_LOGIN_STATE);
+//        UserInfo attribute = (UserInfo) request.getSession().getAttribute(USER_LOGIN_STATE);
         Long id = authorInfoService.getCurrentAuthor(request).getId();
         System.out.println("bookinfo"+bookInfo);
         if(!Objects.equals(bookInfo.getAuthorId(),id)){
