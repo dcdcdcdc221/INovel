@@ -49,6 +49,32 @@ spring:
     multipart:
       # 大小限制
       max-file-size: 10MB
+  mail:
+    #发送邮件的服务器
+    host: smtp.qq.com
+    #邮箱地址
+    username: 909035461@qq.com
+    #授权验证码
+    password: qujcsoyogxzhbdia
+    default-encoding: utf-8
+    properties:
+      mail:
+        smtp:
+          auth: true
+        starttls:
+          enabled: true
+  freemarker:
+    allow:
+    allow-request-override: false
+    allow-session-override: false
+    cache: false
+    charset: UTF-8
+    check-template-location: false
+    content-type: text/html
+    expose-request-attributes: false
+    expose-session-attributes: false
+    suffix: .ftl
+    template-loader-path: classpath:/templeates/
 server:
   address: 0.0.0.0
   port: 8101
