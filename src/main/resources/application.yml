@@ -75,6 +75,12 @@ spring:
     expose-session-attributes: false
     suffix: .ftl
     template-loader-path: classpath:/templeates/
+  #elasticsearch配置
+  elasticsearch:
+    # 是否开启 Elasticsearch 搜索引擎功能：true-开启 false-不开启
+    enabled: false
+    uris:
+      - http://localhost:9201
 server:
   address: 0.0.0.0
   port: 8101
