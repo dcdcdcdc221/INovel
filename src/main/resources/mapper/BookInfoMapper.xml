@@ -36,4 +36,7 @@
         lastChapterName,lastChapterUpdateTime,isVip,
         createTime,updateTime
     </sql>
+    <select id="listBookInfo" resultType="com.deng.springbootinit.model.entity.BookInfo">
+        select * from book_info where updateTime >= #{minUpdateTime}
+    </select>
 </mapper>
