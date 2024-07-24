@@ -12,10 +12,14 @@ import com.deng.springbootinit.mapper.AuthorInfoMapper;
 import com.deng.springbootinit.mapper.BookChapterMapper;
 import com.deng.springbootinit.mapper.BookContentMapper;
 import com.deng.springbootinit.mapper.BookInfoMapper;
+import com.deng.springbootinit.model.dto.book.BookEsDTO;
+import com.deng.springbootinit.model.dto.book.BookQueryRequest;
 import com.deng.springbootinit.model.dto.chapter.ChapterAddReqDto;
 import com.deng.springbootinit.model.dto.chapter.ChapterContentRespDto;
 import com.deng.springbootinit.model.dto.home.book.BookAddReqDto;
+import com.deng.springbootinit.model.dto.post.PostEsDTO;
 import com.deng.springbootinit.model.entity.*;
+import com.deng.springbootinit.model.vo.BookInfoVO;
 import com.deng.springbootinit.service.AuthorInfoService;
 import com.deng.springbootinit.service.BookChapterService;
 import com.deng.springbootinit.service.BookInfoService;
@@ -24,15 +28,28 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.util.StringUtil;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
+import org.springframework.data.elasticsearch.core.SearchHit;
+import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import java.awt.print.Book;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.deng.springbootinit.constant.UserConstant.USER_LOGIN_STATE;
 
@@ -58,6 +75,9 @@ public class BookInfoServiceImpl extends ServiceImpl<BookInfoMapper, BookInfo>
 
     @Resource
     private BookContentMapper bookContentMapper;
+
+    @Resource
+    private ElasticsearchRestTemplate elasticsearchRestTemplate;
 
 
     /**
@@ -217,6 +237,68 @@ public class BookInfoServiceImpl extends ServiceImpl<BookInfoMapper, BookInfo>
                 .chapterName(bookChapter.getChapterName())
                 .chapterNum(bookChapter.getChapterNum())
                 .build();
+    }
+
+    /**
+     * 从es搜索数据
+     * @param bookQueryRequest
+     * @return
+     */
+    @Override
+    public Page<BookInfo> searchFromEs(BookQueryRequest bookQueryRequest) {
+        String searchText = bookQueryRequest.getSearchText();
+        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+        // 按关键词检索
+        if (StringUtils.isNotBlank(searchText)) {
+            boolQueryBuilder.should(QueryBuilders.matchQuery("title", searchText));
+            boolQueryBuilder.should(QueryBuilders.matchQuery("description", searchText));
+            boolQueryBuilder.should(QueryBuilders.matchQuery("content", searchText));
+            boolQueryBuilder.minimumShouldMatch(1);
+        }
+        //TODO 排序
+        //关键词高亮
+        HighlightBuilder highlightBuilder = new HighlightBuilder();
+        //设置标签前缀
+        highlightBuilder.preTags("<font color='red'>");
+        //设置标签后缀
+        highlightBuilder.postTags("</font>");
+        //设置高亮字段
+        highlightBuilder.field("title");
+        highlightBuilder.field("description");
+        highlightBuilder.field("content");
+        //构造查询
+        NativeSearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build();
+        //封装操作结果
+        SearchHits<BookEsDTO> searchHits = elasticsearchRestTemplate.search(searchQuery, BookEsDTO.class);
+        Page<BookInfo> page = new Page<>();
+        page.setTotal(searchHits.getTotalHits());
+        List<BookInfo> resourceList = new ArrayList<>();
+        if(searchHits.hasSearchHits()){
+            List<SearchHit<BookEsDTO>> searchHitList = searchHits.getSearchHits();
+            List<Long> bookIdList = searchHitList.stream().map(searchHit -> searchHit.getContent().getId())
+                    .collect(Collectors.toList());
+            List<BookInfo> bookInfoList = baseMapper.selectBatchIds(bookIdList);
+            if(bookInfoList != null){
+                Map<Long, List<BookInfo>> idBookInfo = bookInfoList.stream()
+                        .collect(Collectors.groupingBy(BookInfo::getId));
+                bookInfoList.forEach(bookInfoId -> {
+                    if (idBookInfo.containsKey(bookInfoId)) {
+                        resourceList.add(idBookInfo.get(bookInfoId).get(0));
+                    } else {
+                        // 从 es 清空 db 已物理删除的数据
+                        String delete = elasticsearchRestTemplate.delete(String.valueOf(bookInfoId), BookEsDTO.class);
+                        log.info("delete post {}", delete);
+                    }
+                });
+            }
+        }
+        page.setRecords(resourceList);
+        return page;
+    }
+
+    @Override
+    public Page<BookInfoVO> getPostVOPage(Page<BookInfo> bookInfoPage, HttpServletRequest request) {
+        return null;
     }
 }
 

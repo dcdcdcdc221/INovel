@@ -210,7 +210,8 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
                     .collect(Collectors.toList());
             List<Post> postList = baseMapper.selectBatchIds(postIdList);
             if (postList != null) {
-                Map<Long, List<Post>> idPostMap = postList.stream().collect(Collectors.groupingBy(Post::getId));
+                Map<Long, List<Post>> idPostMap = postList.stream()
+                        .collect(Collectors.groupingBy(Post::getId));
                 postIdList.forEach(postId -> {
                     if (idPostMap.containsKey(postId)) {
                         resourceList.add(idPostMap.get(postId).get(0));
