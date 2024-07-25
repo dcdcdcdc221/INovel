@@ -58,5 +58,5 @@ public interface BookInfoService extends IService<BookInfo> {
      */
     Page<BookInfo> searchFromEs(BookQueryRequest bookQueryRequest);
 
-    Page<BookInfoVO> getPostVOPage(Page<BookInfo> bookInfoPage, HttpServletRequest request);
+//    Page<BookInfoVO> getBookVOPage(Page<BookInfo> bookInfoPage, HttpServletRequest request);
 }

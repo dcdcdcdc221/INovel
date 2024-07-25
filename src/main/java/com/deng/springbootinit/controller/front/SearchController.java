@@ -27,12 +27,12 @@ public class SearchController {
     private BookInfoService bookInfoService;
 
     @PostMapping("/page/vo")
-    public BaseResponse<Page<BookInfoVO>> searchPostVOByPage(@RequestBody BookQueryRequest bookQueryRequest,
+    public BaseResponse<Page<BookInfo>> searchPostVOByPage(@RequestBody BookQueryRequest bookQueryRequest,
                                                              HttpServletRequest request){
         long size = bookQueryRequest.getPageSize();
         // 限制爬虫
         ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
-        Page<BookInfo> bookInfoPage = bookInfoService.searchFromEs(bookQueryRequest);
-        return ResultUtils.success(bookInfoService.getPostVOPage(bookInfoPage,request));
+//        Page<BookInfo> bookInfoPage = bookInfoService.searchFromEs(bookQueryRequest);
+        return ResultUtils.success(bookInfoService.searchFromEs(bookQueryRequest));
     }
 }

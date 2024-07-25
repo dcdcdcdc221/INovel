@@ -1,5 +1,9 @@
 package com.deng.springbootinit.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.json.JSON;
+import cn.hutool.json.JSONConfig;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -250,56 +254,80 @@ public class BookInfoServiceImpl extends ServiceImpl<BookInfoMapper, BookInfo>
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
         // 按关键词检索
         if (StringUtils.isNotBlank(searchText)) {
-            boolQueryBuilder.should(QueryBuilders.matchQuery("title", searchText));
-            boolQueryBuilder.should(QueryBuilders.matchQuery("description", searchText));
-            boolQueryBuilder.should(QueryBuilders.matchQuery("content", searchText));
+            boolQueryBuilder.should(QueryBuilders.matchQuery("categoryName", searchText));
+            boolQueryBuilder.should(QueryBuilders.matchQuery("bookName", searchText));
+            boolQueryBuilder.should(QueryBuilders.matchQuery("authorName", searchText));
+            boolQueryBuilder.should(QueryBuilders.matchQuery("bookDesc", searchText));
             boolQueryBuilder.minimumShouldMatch(1);
         }
-        //TODO 排序
-        //关键词高亮
-        HighlightBuilder highlightBuilder = new HighlightBuilder();
-        //设置标签前缀
-        highlightBuilder.preTags("<font color='red'>");
-        //设置标签后缀
-        highlightBuilder.postTags("</font>");
-        //设置高亮字段
-        highlightBuilder.field("title");
-        highlightBuilder.field("description");
-        highlightBuilder.field("content");
-        //构造查询
-        NativeSearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build();
-        //封装操作结果
+        // 排序 - TODO
+
+        // 关键词高亮
+        HighlightBuilder highlightBuilder = new HighlightBuilder()
+                .preTags("<font color='red'>")
+                .postTags("</font>")
+                .field("title")
+                .field("description")
+                .field("content");
+
+        // 构造查询
+        NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
+                .withQuery(boolQueryBuilder)
+                .withHighlightBuilder(highlightBuilder)
+                .build();
+
+        log.info("Constructed query: {}", searchQuery);
+
+        // 封装操作结果
         SearchHits<BookEsDTO> searchHits = elasticsearchRestTemplate.search(searchQuery, BookEsDTO.class);
-        Page<BookInfo> page = new Page<>();
+        log.info("Search hits: {}", searchHits);
+
+        Page<BookInfo> page = new Page<>(bookQueryRequest.getCurrent(),bookQueryRequest.getPageSize());
+        log.info("Page: {},{}", page.getCurrent(),page.getPages());
         page.setTotal(searchHits.getTotalHits());
         List<BookInfo> resourceList = new ArrayList<>();
-        if(searchHits.hasSearchHits()){
+
+        if (searchHits.hasSearchHits()) {
             List<SearchHit<BookEsDTO>> searchHitList = searchHits.getSearchHits();
-            List<Long> bookIdList = searchHitList.stream().map(searchHit -> searchHit.getContent().getId())
+            List<Long> bookIdList = searchHitList.stream()
+                    .map(searchHit -> searchHit.getContent().getId())
                     .collect(Collectors.toList());
             List<BookInfo> bookInfoList = baseMapper.selectBatchIds(bookIdList);
-            if(bookInfoList != null){
+
+            if (bookInfoList != null) {
                 Map<Long, List<BookInfo>> idBookInfo = bookInfoList.stream()
                         .collect(Collectors.groupingBy(BookInfo::getId));
-                bookInfoList.forEach(bookInfoId -> {
-                    if (idBookInfo.containsKey(bookInfoId)) {
-                        resourceList.add(idBookInfo.get(bookInfoId).get(0));
+                bookIdList.forEach(bookId -> { // bookId 是 Long 类型
+                    if (idBookInfo.containsKey(bookId)) {
+                        resourceList.add(idBookInfo.get(bookId).get(0));
+                        log.info("ResourceList add {}",resourceList);
                     } else {
-                        // 从 es 清空 db 已物理删除的数据
-                        String delete = elasticsearchRestTemplate.delete(String.valueOf(bookInfoId), BookEsDTO.class);
-                        log.info("delete post {}", delete);
+                        String delete = elasticsearchRestTemplate.delete(String.valueOf(bookId), BookEsDTO.class);
+                        log.info("Deleted document from Elasticsearch: {}", delete);
                     }
                 });
             }
+            log.info("BookInfo list retrieved from database: {}", JSONUtil.toJsonPrettyStr(bookInfoList));
         }
+
         page.setRecords(resourceList);
+        log.info("Resource list populated with BookInfo objects: {}", resourceList.toArray());
+        log.info("The Final Data: {}", page.getRecords().toString());
+        log.info("Elasticsearch query execution completed");
         return page;
     }
 
-    @Override
-    public Page<BookInfoVO> getPostVOPage(Page<BookInfo> bookInfoPage, HttpServletRequest request) {
-        return null;
-    }
+
+//    @Override
+//    public Page<BookInfoVO> getBookVOPage(Page<BookInfo> bookInfoPage, HttpServletRequest request) {
+//        List<BookInfo> bookInfoList = bookInfoPage.getRecords();
+//        Page<BookInfoVO> bookInfoVOPage = new Page<>(bookInfoPage.getCurrent(), bookInfoPage.getSize(), bookInfoPage.getTotal());
+//        if(CollUtil.isEmpty(bookInfoList)){
+//            return  bookInfoVOPage;
+//        }
+//        bookInfoVOPage.setRecords(bookInfoList);
+//        return bookInfoVOPage;
+//    }
 }
 
 
