@@ -1,11 +1,14 @@
 package com.deng.springbootinit.controller.front;
 
 import com.deng.springbootinit.common.BaseResponse;
+import com.deng.springbootinit.common.ResultUtils;
 import com.deng.springbootinit.model.dto.home.book.HomeBookRespDto;
+import com.deng.springbootinit.service.HomeBookService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -15,8 +18,11 @@ import java.util.List;
 @RequestMapping("/home")
 public class HomeController {
 
+    @Resource
+    private HomeBookService homeBookService;
+
     @GetMapping("/books")
     public BaseResponse<List<HomeBookRespDto>> listHomeBooks(){
-        return null;
+        return ResultUtils.success(homeBookService.listHomeBooks());
     }
 }

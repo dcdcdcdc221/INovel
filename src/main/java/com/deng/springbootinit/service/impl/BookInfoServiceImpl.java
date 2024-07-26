@@ -1,18 +1,13 @@
 package com.deng.springbootinit.service.impl;
 
-import cn.hutool.core.collection.CollUtil;
-import cn.hutool.json.JSON;
-import cn.hutool.json.JSONConfig;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.deng.springbootinit.common.BaseResponse;
 import com.deng.springbootinit.common.ErrorCode;
 import com.deng.springbootinit.common.PageRequest;
 import com.deng.springbootinit.exception.BusinessException;
 import com.deng.springbootinit.exception.ThrowUtils;
-import com.deng.springbootinit.mapper.AuthorInfoMapper;
 import com.deng.springbootinit.mapper.BookChapterMapper;
 import com.deng.springbootinit.mapper.BookContentMapper;
 import com.deng.springbootinit.mapper.BookInfoMapper;
@@ -21,22 +16,15 @@ import com.deng.springbootinit.model.dto.book.BookQueryRequest;
 import com.deng.springbootinit.model.dto.chapter.ChapterAddReqDto;
 import com.deng.springbootinit.model.dto.chapter.ChapterContentRespDto;
 import com.deng.springbootinit.model.dto.home.book.BookAddReqDto;
-import com.deng.springbootinit.model.dto.post.PostEsDTO;
 import com.deng.springbootinit.model.entity.*;
-import com.deng.springbootinit.model.vo.BookInfoVO;
 import com.deng.springbootinit.service.AuthorInfoService;
-import com.deng.springbootinit.service.BookChapterService;
 import com.deng.springbootinit.service.BookInfoService;
-import com.deng.springbootinit.service.UserService;
-import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.util.StringUtil;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.springframework.beans.BeanUtils;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
@@ -48,7 +36,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import java.awt.print.Book;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -274,6 +261,8 @@ public class BookInfoServiceImpl extends ServiceImpl<BookInfoMapper, BookInfo>
         NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
                 .withQuery(boolQueryBuilder)
                 .withHighlightBuilder(highlightBuilder)
+                .withPageable(org.springframework.data.domain.PageRequest.of(bookQueryRequest.getCurrent() -1,
+                        bookQueryRequest.getPageSize()))
                 .build();
 
         log.info("Constructed query: {}", searchQuery);
@@ -282,7 +271,7 @@ public class BookInfoServiceImpl extends ServiceImpl<BookInfoMapper, BookInfo>
         SearchHits<BookEsDTO> searchHits = elasticsearchRestTemplate.search(searchQuery, BookEsDTO.class);
         log.info("Search hits: {}", searchHits);
 
-        Page<BookInfo> page = new Page<>(bookQueryRequest.getCurrent(),bookQueryRequest.getPageSize());
+        Page<BookInfo> page = new Page<>(bookQueryRequest.getCurrent()-1,bookQueryRequest.getPageSize());
         log.info("Page: {},{}", page.getCurrent(),page.getPages());
         page.setTotal(searchHits.getTotalHits());
         List<BookInfo> resourceList = new ArrayList<>();
@@ -300,7 +289,7 @@ public class BookInfoServiceImpl extends ServiceImpl<BookInfoMapper, BookInfo>
                 bookIdList.forEach(bookId -> { // bookId 是 Long 类型
                     if (idBookInfo.containsKey(bookId)) {
                         resourceList.add(idBookInfo.get(bookId).get(0));
-                        log.info("ResourceList add {}",resourceList);
+                        log.info("ResourceList add {}",JSONUtil.toJsonPrettyStr(resourceList));
                     } else {
                         String delete = elasticsearchRestTemplate.delete(String.valueOf(bookId), BookEsDTO.class);
                         log.info("Deleted document from Elasticsearch: {}", delete);
@@ -311,8 +300,8 @@ public class BookInfoServiceImpl extends ServiceImpl<BookInfoMapper, BookInfo>
         }
 
         page.setRecords(resourceList);
-        log.info("Resource list populated with BookInfo objects: {}", resourceList.toArray());
-        log.info("The Final Data: {}", page.getRecords().toString());
+        log.info("Resource list populated with BookInfo objects: {}", JSONUtil.toJsonPrettyStr(resourceList));
+        log.info("The Final Data: {}", JSONUtil.toJsonPrettyStr(page.getRecords()));
         log.info("Elasticsearch query execution completed");
         return page;
     }
