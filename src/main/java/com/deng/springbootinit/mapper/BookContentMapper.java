@@ -1,5 +1,6 @@
 package com.deng.springbootinit.mapper;
 
+import com.deng.springbootinit.model.dto.book.BookContentQueryResponse;
 import com.deng.springbootinit.model.entity.BookContent;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
@@ -10,7 +11,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 * @Entity com.deng.springbootinit.model.entity.BookContent
 */
 public interface BookContentMapper extends BaseMapper<BookContent> {
-
+    BookContentQueryResponse getBookContent(Long id);
 }
 
 

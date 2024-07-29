@@ -16,4 +16,11 @@
         id,chapterId,content,
         createTime,updateTime
     </sql>
+    <select id="getBookContent" resultType="com.deng.springbootinit.model.dto.book.BookContentQueryResponse">
+        select a.content, b.chapterName, b.isVip, b.wordCount
+        from book_content a,
+             book_chapter b
+        where a.chapterId = b.id
+          and b.bookId = #{id} order by b.chapterNum limit 1;
+    </select>
 </mapper>

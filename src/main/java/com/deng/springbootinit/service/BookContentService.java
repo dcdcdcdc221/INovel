@@ -1,7 +1,10 @@
 package com.deng.springbootinit.service;
 
+import com.deng.springbootinit.model.dto.book.BookContentQueryResponse;
 import com.deng.springbootinit.model.entity.BookContent;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
 * @author a9090
@@ -10,4 +13,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface BookContentService extends IService<BookContent> {
 
+    BookContentQueryResponse getBookContent(Long bookId, HttpServletRequest request);
 }
