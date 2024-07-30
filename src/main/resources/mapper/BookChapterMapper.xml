@@ -19,4 +19,10 @@
         chapterName,wordCount,isVip,
         createTime,updateTime
     </sql>
+    <select id="getBookChapterList"
+            resultType="com.deng.springbootinit.model.dto.book.BookChapterListResponse">
+        select id,chapterName,isVip
+        from book_chapter
+        where bookId = #{bookId} order by chapterNum
+    </select>
 </mapper>

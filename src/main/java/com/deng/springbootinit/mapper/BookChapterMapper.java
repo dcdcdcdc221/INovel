@@ -1,9 +1,12 @@
 package com.deng.springbootinit.mapper;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.deng.springbootinit.model.dto.book.BookChapterListResponse;
 import com.deng.springbootinit.model.entity.BookChapter;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.deng.springbootinit.model.entity.BookContent;
+
+import java.util.List;
 
 /**
 * @author a9090
@@ -12,7 +15,7 @@ import com.deng.springbootinit.model.entity.BookContent;
 * @Entity com.deng.springbootinit.model.entity.BookChapter
 */
 public interface BookChapterMapper extends BaseMapper<BookChapter> {
-
+    List<BookChapterListResponse> getBookChapterList(Long id);
 }
 
 

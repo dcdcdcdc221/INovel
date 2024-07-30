@@ -1,5 +1,6 @@
 package com.deng.springbootinit.service.impl;
 
+import cn.hutool.core.collection.ListUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -8,6 +9,7 @@ import com.deng.springbootinit.common.PageRequest;
 import com.deng.springbootinit.exception.ThrowUtils;
 import com.deng.springbootinit.mapper.BookContentMapper;
 import com.deng.springbootinit.mapper.BookInfoMapper;
+import com.deng.springbootinit.model.dto.book.BookChapterListResponse;
 import com.deng.springbootinit.model.dto.chapter.ChapterUpdateReqDto;
 import com.deng.springbootinit.model.entity.AuthorInfo;
 import com.deng.springbootinit.model.entity.BookChapter;
@@ -23,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -114,6 +118,13 @@ public class BookChapterServiceImpl extends ServiceImpl<BookChapterMapper, BookC
         //此处不会更新update的值
         bookInfoMapper.updateById(newBookInfo);
         return true;
+    }
+
+    @Override
+    public List<BookChapterListResponse> getBookChapterList(Long bookId) {
+        //TODO 限流
+        List<BookChapterListResponse> bookChapterList1 = bookChapterMapper.getBookChapterList(bookId);
+        return bookChapterList1;
     }
 }
 

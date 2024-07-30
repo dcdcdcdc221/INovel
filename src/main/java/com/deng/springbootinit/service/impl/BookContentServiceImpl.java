@@ -43,6 +43,10 @@ public class BookContentServiceImpl extends ServiceImpl<BookContentMapper, BookC
         UserInfo loginUser = userService.getLoginUser(request);
         log.info("用户搜索阅读章节获取用户信息结果 {}", loginUser);
         ThrowUtils.throwIf(ObjectUtils.isEmpty(loginUser), ErrorCode.NO_AUTH_ERROR,"未登录");
+        BookContentQueryResponse bookContent = bookContentMapper.getBookContent(bookId);
+        ThrowUtils.throwIf(ObjectUtils.isEmpty(bookContent), ErrorCode.NOT_FOUND_ERROR,"该书籍暂无章节");
+        //信息为空
+        //TODO 新增isVIP
         //获取当前书籍的第一个章节信息
         return bookContentMapper.getBookContent(bookId);
     }

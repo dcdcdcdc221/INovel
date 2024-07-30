@@ -3,6 +3,7 @@ package com.deng.springbootinit.controller.front;
 import com.deng.springbootinit.common.BaseResponse;
 import com.deng.springbootinit.common.ErrorCode;
 import com.deng.springbootinit.common.ResultUtils;
+import com.deng.springbootinit.model.dto.book.BookChapterListResponse;
 import com.deng.springbootinit.model.dto.book.BookContentQueryResponse;
 import com.deng.springbootinit.model.dto.home.book.HomeBookRespDto;
 import com.deng.springbootinit.model.entity.UserInfo;
@@ -41,18 +42,26 @@ public class HomeController {
     private BookContentService bookContentService;
 
 
-    /**
-     * ES查询
-     * @return
-     */
+
     @GetMapping("/books")
     public BaseResponse<List<HomeBookRespDto>> listHomeBooks(){
         return ResultUtils.success(homeBookService.listHomeBooks());
     }
 
+    /**
+     * 阅读当前查询书籍
+     * @param bookId
+     * @param request
+     * @return
+     */
     @GetMapping("/books/{bookId}")
     public BaseResponse<BookContentQueryResponse> getBookContent(@PathVariable("bookId") Long bookId,
                                                                  HttpServletRequest request){
         return ResultUtils.success(bookContentService.getBookContent(bookId,request));
+    }
+
+    @GetMapping("/chapter/{bookId}")
+    public BaseResponse<List<BookChapterListResponse>> getBookChapterList(@PathVariable("bookId") Long bookId){
+        return ResultUtils.success(bookChapterService.getBookChapterList(bookId));
     }
 }
